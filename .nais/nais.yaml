@@ -35,6 +35,8 @@ spec:
       enabled: true
       runtime: java
   env:
+    - name: RAPID_APP_NAME
+      value: dp-andre-ytelser
     - name: KAFKA_EXTRA_TOPIC
       value: teamforeldrepenger.vedtak-ekstern
     - name: KAFKA_CONSUMER_GROUP_ID
