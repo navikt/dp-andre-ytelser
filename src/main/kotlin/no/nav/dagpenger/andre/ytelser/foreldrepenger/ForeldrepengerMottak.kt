@@ -21,6 +21,7 @@ internal class ForeldrepengerMottak(
 
     init {
         River(rapidsConnection)
+            .precondition { it.forbid("@event_name") }
             .validate { it.requireKey("personidentifikator", "tidspunkt", "tema") }
             .register(this)
     }
@@ -31,8 +32,6 @@ internal class ForeldrepengerMottak(
         metadata: MessageMetadata,
         meterRegistry: MeterRegistry,
     ) {
-        if (metadata.topic != TOPIC) return
-
         val tema = packet["tema"].asText()
         val tidspunkt = packet["tidspunkt"].asText()
 
@@ -64,7 +63,6 @@ internal class ForeldrepengerMottak(
         context: MessageContext,
         metadata: MessageMetadata,
     ) {
-        if (metadata.topic != TOPIC) return
         log.error { "Feil ved parsing av foreldrepenger vedtak-ekstern melding: $problems" }
         sikkerlogg.error { "Feil ved parsing av foreldrepenger vedtak-ekstern melding: $problems" }
     }

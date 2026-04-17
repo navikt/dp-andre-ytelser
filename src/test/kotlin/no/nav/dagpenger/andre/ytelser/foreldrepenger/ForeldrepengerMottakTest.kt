@@ -1,7 +1,6 @@
 package no.nav.dagpenger.andre.ytelser.foreldrepenger
 
 import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
-import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageMetadata
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -19,11 +18,8 @@ class ForeldrepengerMottakTest {
     }
 
     @Test
-    fun `skal publisere annen_ytelse_vedtatt ved mottak av vedtak-ekstern med tema FOR`() {
-        testRapid.sendTestMessage(
-            vedtakEkstern(tema = "FOR"),
-            metadata = foreldrepengerMetadata(),
-        )
+    fun `skal publisere annen_ytelse_vedtatt ved mottak av vedtak med tema FOR`() {
+        testRapid.sendTestMessage(vedtakEkstern(tema = "FOR"))
 
         val inspektør = testRapid.inspektør
         inspektør.size shouldBe 1
@@ -37,11 +33,8 @@ class ForeldrepengerMottakTest {
     }
 
     @Test
-    fun `skal publisere annen_ytelse_vedtatt ved mottak av vedtak-ekstern med tema OMS`() {
-        testRapid.sendTestMessage(
-            vedtakEkstern(ident = "98765432100", tema = "OMS"),
-            metadata = foreldrepengerMetadata(),
-        )
+    fun `skal publisere annen_ytelse_vedtatt ved mottak av vedtak med tema OMS`() {
+        testRapid.sendTestMessage(vedtakEkstern(ident = "98765432100", tema = "OMS"))
 
         testRapid.inspektør.size shouldBe 1
         testRapid.inspektør.message(0).let { msg ->
@@ -50,40 +43,15 @@ class ForeldrepengerMottakTest {
         }
     }
 
-    @Test
-    fun `skal ignorere meldinger fra rapid-topic`() {
-        testRapid.sendTestMessage(
-            vedtakEkstern(tema = "FOR"),
-            metadata =
-                MessageMetadata(
-                    topic = "teamdagpenger.rapid.v1",
-                    partition = 0,
-                    offset = 0,
-                    key = null,
-                    headers = emptyMap(),
-                ),
-        )
-
-        testRapid.inspektør.size shouldBe 0
-    }
-
     private fun vedtakEkstern(
         ident: String = "12345678901",
         tema: String = "FOR",
-    ) = """
+    ) = //language=JSON
+        """
         {
             "personidentifikator": "$ident",
             "tidspunkt": "2026-04-17T08:30:00+02:00",
             "tema": "$tema"
         }
-    """.trimIndent()
-
-    private fun foreldrepengerMetadata() =
-        MessageMetadata(
-            topic = ForeldrepengerMottak.TOPIC,
-            partition = 0,
-            offset = 0,
-            key = null,
-            headers = emptyMap(),
-        )
+        """.trimIndent()
 }
