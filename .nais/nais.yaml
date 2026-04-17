@@ -1,0 +1,43 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: dp-andre-ytelser
+  namespace: teamdagpenger
+  labels:
+    team: teamdagpenger
+spec:
+  image: "{{ image }}"
+  port: 8080
+  replicas:
+    min: 2
+    max: 2
+  resources:
+    requests:
+      cpu: 15m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+  kafka:
+    pool: "{{ kafka.pool }}"
+  liveness:
+    path: /isalive
+  readiness:
+    path: /isready
+  prometheus:
+    enabled: true
+    path: /metrics
+  observability:
+    logging:
+      destinations:
+        - id: loki
+        - id: elastic
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+  env:
+    - name: KAFKA_EXTRA_TOPIC
+      value: teamforeldrepenger.vedtak-ekstern
+    - name: KAFKA_CONSUMER_GROUP_ID
+      value: dp-andre-ytelser-v1
+    - name: KAFKA_RAPID_TOPIC
+      value: teamdagpenger.rapid.v1
