@@ -32,30 +32,17 @@ internal class ForeldrepengerMottak(
         metadata: MessageMetadata,
         meterRegistry: MeterRegistry,
     ) {
+        val ident = packet["personidentifikator"].asText()
         val tema = packet["tema"].asText()
         val tidspunkt = packet["tidspunkt"].asText()
+        val maskertIdent = ident.take(6) + "*****"
 
         log.info { "Mottok vedtak fra foreldrepenger med tema=$tema, tidspunkt=$tidspunkt" }
-
-        val melding =
-            JsonMessage
-                .newMessage(
-                    "annen_ytelse_vedtatt",
-                    mapOf(
-                        "ident" to packet["personidentifikator"].asText(),
-                        "tidspunkt" to tidspunkt,
-                        "tema" to tema,
-                        "kilde" to "foreldrepenger",
-                    ),
-                )
-
-        context.publish(melding.toJson())
+        sikkerlogg.info { "Mottok vedtak fra foreldrepenger: ident=$maskertIdent, tema=$tema, tidspunkt=$tidspunkt" }
 
         meterRegistry
             .counter("ytelse_vedtak_mottatt_total", "tema", tema, "kilde", "foreldrepenger")
             .increment()
-
-        log.info { "Publiserte annen_ytelse_vedtatt (kilde=foreldrepenger, tema=$tema) på rapiden" }
     }
 
     override fun onError(
