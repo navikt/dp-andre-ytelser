@@ -1,4 +1,4 @@
-name: Build and deploy
+name: Deploy
 
 on:
   push:
@@ -12,7 +12,6 @@ jobs:
     permissions:
       contents: write
       checks: write
-      pull-requests: write
       id-token: write
     steps:
       - uses: actions/checkout@v6
@@ -27,41 +26,17 @@ jobs:
         with:
           dependency-graph: generate-and-submit
           cache-encryption-key: ${{ secrets.GradleEncryptionKey }}
-      - run: ./gradlew --configuration-cache build installDist
-
-      - name: Publish results (unit test)
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: success() || failure()
-        with:
-          junit_files: "**/build/test-results/test/TEST-*.xml"
-
+      - run: ./gradlew --configuration-cache build
       - name: docker-build-push
         uses: nais/docker-build-push@v0
         id: docker-build-push
         with:
           team: teamdagpenger
-          push_image: true
           tag: ${{ github.sha }}
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
-          salsa: false
     outputs:
       image: ${{ steps.docker-build-push.outputs.image }}
-      digest: ${{ steps.docker-build-push.outputs.digest }}
-
-  salsa:
-    name: Generate SBOM, attest and sign image
-    needs: [build]
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-    steps:
-      - uses: navikt/dagpenger/actions/attest-sign@master
-        with:
-          digest: ${{ needs.build.outputs.digest }}
-          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
-          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
-          team: teamdagpenger
 
   deploy-dev:
     name: Deploy to dev
@@ -70,8 +45,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev-gcp
     permissions:
-      contents: read
-      id-token: write
+      contents: "read"
+      id-token: "write"
     steps:
       - uses: actions/checkout@v6
       - uses: nais/deploy/actions/deploy@v2
@@ -89,8 +64,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod-gcp
     permissions:
-      contents: read
-      id-token: write
+      contents: "read"
+      id-token: "write"
     steps:
       - uses: actions/checkout@v6
       - uses: nais/deploy/actions/deploy@v2
