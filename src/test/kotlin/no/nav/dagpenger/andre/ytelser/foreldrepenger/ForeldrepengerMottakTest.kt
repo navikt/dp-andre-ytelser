@@ -18,15 +18,41 @@ class ForeldrepengerMottakTest {
     }
 
     @Test
-    fun `skal motta vedtak med tema FOR uten å publisere på rapiden`() {
+    fun `skal publisere andre_ytelse_mottatt for tema FOR`() {
         testRapid.sendTestMessage(vedtakEkstern(tema = "FOR"))
+
+        testRapid.inspektør.size shouldBe 1
+        testRapid.inspektør.message(0).let { melding ->
+            melding["@event_name"].asText() shouldBe "andre_ytelse_mottatt"
+            melding["tema"].asText() shouldBe "FORELDREPENGER"
+            melding["ident"].asText() shouldBe "12345678901"
+            melding["tidspunkt"].asText() shouldBe "2026-04-17T08:30:00+02:00"
+            melding["kilde"]["system"].asText() shouldBe "fp-abakus"
+            melding["kilde"]["topic"].asText() shouldBe "teamforeldrepenger.vedtak-ekstern"
+        }
+    }
+
+    @Test
+    fun `skal publisere andre_ytelse_mottatt for tema OMS`() {
+        testRapid.sendTestMessage(vedtakEkstern(ident = "98765432100", tema = "OMS"))
+
+        testRapid.inspektør.size shouldBe 1
+        testRapid.inspektør.message(0).let { melding ->
+            melding["@event_name"].asText() shouldBe "andre_ytelse_mottatt"
+            melding["tema"].asText() shouldBe "OMSORGSPENGER"
+        }
+    }
+
+    @Test
+    fun `skal ignorere melding med ukjent tema`() {
+        testRapid.sendTestMessage(vedtakEkstern(tema = "UKJENT"))
 
         testRapid.inspektør.size shouldBe 0
     }
 
     @Test
-    fun `skal motta vedtak med tema OMS uten å publisere på rapiden`() {
-        testRapid.sendTestMessage(vedtakEkstern(ident = "98765432100", tema = "OMS"))
+    fun `skal ikke prosessere meldinger fra rapiden`() {
+        testRapid.sendTestMessage(rapidMelding())
 
         testRapid.inspektør.size shouldBe 0
     }
@@ -40,6 +66,17 @@ class ForeldrepengerMottakTest {
             "personidentifikator": "$ident",
             "tidspunkt": "2026-04-17T08:30:00+02:00",
             "tema": "$tema"
+        }
+        """.trimIndent()
+
+    private fun rapidMelding() =
+        //language=JSON
+        """
+        {
+            "@event_name": "noe_fra_rapiden",
+            "personidentifikator": "12345678901",
+            "tidspunkt": "2026-04-17T08:30:00+02:00",
+            "tema": "FOR"
         }
         """.trimIndent()
 }
