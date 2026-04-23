@@ -1,4 +1,4 @@
-package no.nav.dagpenger.andre.ytelser.foreldrepenger
+package no.nav.dagpenger.andre.ytelser.sykmelding
 
 import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 import com.github.navikt.tbd_libs.rapids_and_rivers.River
@@ -8,23 +8,22 @@ import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageProblems
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.dagpenger.andre.ytelser.Tema
 
 private val log = KotlinLogging.logger {}
 private val sikkerlogg = KotlinLogging.logger("tjenestekall")
 
-internal class ForeldrepengerMottak(
+internal class SykmeldingMottak(
     rapidsConnection: RapidsConnection,
 ) : River.PacketListener {
     companion object {
-        const val TOPIC = "teamforeldrepenger.vedtak-ekstern"
-        const val SYSTEM = "fp-abakus"
+        const val TOPIC = "tsm.sykmeldinger"
+        const val SYSTEM = "tsm"
     }
 
     init {
         River(rapidsConnection)
             .precondition { it.forbid("@event_name") }
-            .validate { it.requireKey("personidentifikator", "tidspunkt", "tema") }
+            .validate { it.requireKey("sykmelding") }
             .register(this)
     }
 
@@ -34,22 +33,16 @@ internal class ForeldrepengerMottak(
         metadata: MessageMetadata,
         meterRegistry: MeterRegistry,
     ) {
-        val ident = packet["personidentifikator"].asText()
-        val kildeTema = packet["tema"].asText()
-        val tidspunkt = packet["tidspunkt"].asText()
+        val sykmelding = packet["sykmelding"]
+        val ident = sykmelding["pasient"]["fnr"].asText()
+        val tidspunkt = sykmelding["metadata"]["mottattDato"].asText()
         val maskertIdent = ident.take(6) + "*****"
 
-        val tema = Tema.fraKildeTema(kildeTema)
-        if (tema == null) {
-            log.warn { "Ukjent tema=$kildeTema fra $TOPIC — hopper over" }
-            return
-        }
-
-        log.info { "Mottok vedtak fra foreldrepenger: tema=${tema.name}, tidspunkt=$tidspunkt" }
-        sikkerlogg.info { "Mottok vedtak fra foreldrepenger: ident=$maskertIdent, tema=${tema.name}, tidspunkt=$tidspunkt" }
+        log.info { "Mottok sykmelding fra $SYSTEM: tidspunkt=$tidspunkt" }
+        sikkerlogg.info { "Mottok sykmelding fra $SYSTEM: ident=$maskertIdent, tidspunkt=$tidspunkt" }
 
         meterRegistry
-            .counter("ytelse_vedtak_mottatt_total", "tema", tema.name, "kilde", SYSTEM)
+            .counter("ytelse_vedtak_mottatt_total", "tema", "SYKMELDING", "kilde", SYSTEM)
             .increment()
     }
 
@@ -58,7 +51,7 @@ internal class ForeldrepengerMottak(
         context: MessageContext,
         metadata: MessageMetadata,
     ) {
-        log.error { "Feil ved parsing av foreldrepenger vedtak-ekstern melding: $problems" }
-        sikkerlogg.error { "Feil ved parsing av foreldrepenger vedtak-ekstern melding: $problems" }
+        log.error { "Feil ved parsing av sykmelding-melding: $problems" }
+        sikkerlogg.error { "Feil ved parsing av sykmelding-melding: $problems" }
     }
 }
