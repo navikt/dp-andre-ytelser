@@ -13,22 +13,26 @@ fun main() {
         log.error { "Uncaught exception logget i securelog" }
         sikkerlogg.error(e) { e.message }
     }
+    App.start()
+}
 
-    RapidApplication
-        .create(System.getenv())
-        .apply {
-            ForeldrepengerMottak(this)
+internal object App : RapidsConnection.StatusListener {
+    private val rapidsConnection =
+        RapidApplication.create(Configuration.config).also {
+            ForeldrepengerMottak(it)
+        }
 
-            register(
-                object : RapidsConnection.StatusListener {
-                    override fun onStartup(rapidsConnection: RapidsConnection) {
-                        log.info { "Starter dp-andre-ytelser" }
-                    }
+    init {
+        rapidsConnection.register(this)
+    }
 
-                    override fun onShutdown(rapidsConnection: RapidsConnection) {
-                        log.info { "Stopper dp-andre-ytelser" }
-                    }
-                },
-            )
-        }.start()
+    fun start() = rapidsConnection.start()
+
+    override fun onStartup(rapidsConnection: RapidsConnection) {
+        log.info { "Starter dp-andre-ytelser" }
+    }
+
+    override fun onShutdown(rapidsConnection: RapidsConnection) {
+        log.info { "Stopper dp-andre-ytelser" }
+    }
 }
