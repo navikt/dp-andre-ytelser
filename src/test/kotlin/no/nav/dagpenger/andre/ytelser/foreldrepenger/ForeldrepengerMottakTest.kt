@@ -27,9 +27,18 @@ class ForeldrepengerMottakTest {
         event["@event_name"].asText() shouldBe "annen_ytelse_endret"
         event["ident"].asText() shouldBe "12345678901"
         event["tema"].asText() shouldBe "FOR"
-        event["tidspunkt"].asText() shouldBe "2026-04-17T08:30:00+02:00"
+        event["tidspunkt"].asText() shouldBe "2026-04-17T08:30:00"
         event["kilde"]["system"].asText() shouldBe "fp-abakus"
         event["kilde"]["topic"].asText() shouldBe "teamforeldrepenger.vedtak-ekstern"
+    }
+
+    @Test
+    fun `skal normalisere tidspunkt til Europe-Oslo LocalDateTime`() {
+        testRapid.sendTestMessage(vedtakEkstern(tidspunkt = "2026-04-17T06:30:00Z"))
+
+        testRapid.inspektør.size shouldBe 1
+        // 06:30 UTC = 08:30 Oslo (CEST)
+        testRapid.inspektør.message(0)["tidspunkt"].asText() shouldBe "2026-04-17T08:30:00"
     }
 
     @Test
@@ -50,11 +59,12 @@ class ForeldrepengerMottakTest {
     private fun vedtakEkstern(
         ident: String = "12345678901",
         tema: String = "FOR",
+        tidspunkt: String = "2026-04-17T08:30:00+02:00",
     ) = //language=JSON
         """
         {
             "personidentifikator": "$ident",
-            "tidspunkt": "2026-04-17T08:30:00+02:00",
+            "tidspunkt": "$tidspunkt",
             "tema": "$tema"
         }
         """.trimIndent()

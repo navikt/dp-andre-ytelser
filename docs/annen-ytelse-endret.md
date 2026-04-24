@@ -11,7 +11,7 @@ foreldrepenger.
   "@event_name": "annen_ytelse_endret",
   "ident": "12345678901",
   "tema": "FOR",
-  "tidspunkt": "2026-04-24T10:59:42+02:00",
+  "tidspunkt": "2026-04-24T10:59:42",
   "kilde": {
     "system": "fp-abakus",
     "topic": "teamforeldrepenger.vedtak-ekstern"
@@ -28,7 +28,7 @@ foreldrepenger.
 | `@event_name` | string | Alltid `"annen_ytelse_endret"` |
 | `ident` | string | Fnr |
 | `tema` | string | Rå tema-kode fra kilden (se tabell under) |
-| `tidspunkt` | ISO-8601 | Når kildesystemet publiserte — **ikke** vedtakstidspunkt |
+| `tidspunkt` | `LocalDateTime` | Når kildesystemet publiserte — **ikke** vedtakstidspunkt. Normalisert til Europe/Oslo |
 | `kilde.system` | string | Kildesystem |
 | `kilde.topic` | string | Kafka-topic |
 

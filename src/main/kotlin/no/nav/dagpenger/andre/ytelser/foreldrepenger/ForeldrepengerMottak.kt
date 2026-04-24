@@ -8,9 +8,14 @@ import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageProblems
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.core.instrument.MeterRegistry
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneId
 
 private val log = KotlinLogging.logger {}
 private val sikkerlogg = KotlinLogging.logger("tjenestekall")
+
+private val OSLO = ZoneId.of("Europe/Oslo")
 
 internal class ForeldrepengerMottak(
     rapidsConnection: RapidsConnection,
@@ -36,10 +41,11 @@ internal class ForeldrepengerMottak(
     ) {
         val ident = packet["personidentifikator"].asText()
         val tema = packet["tema"].asText()
-        val tidspunkt = packet["tidspunkt"].asText()
+        val raaTidspunkt = packet["tidspunkt"].asText()
+        val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
         val maskertIdent = ident.take(6) + "*****"
 
-        log.info { "Mottok vedtak fra foreldrepenger: tema=$tema, tidspunkt=$tidspunkt" }
+        log.info { "Mottok vedtak fra foreldrepenger: tema=$tema, tidspunkt=$tidspunkt (rå=$raaTidspunkt)" }
         sikkerlogg.info { "Mottok vedtak fra foreldrepenger: ident=$maskertIdent, tema=$tema, tidspunkt=$tidspunkt" }
 
         val event =
@@ -62,6 +68,8 @@ internal class ForeldrepengerMottak(
             .counter("ytelse_vedtak_mottatt_total", "tema", tema, "kilde", SYSTEM)
             .increment()
     }
+
+    private fun normaliserTilOsloTid(raa: String): LocalDateTime = OffsetDateTime.parse(raa).atZoneSameInstant(OSLO).toLocalDateTime()
 
     override fun onError(
         problems: MessageProblems,

@@ -127,7 +127,7 @@ Foreldrepenger publiseres som:
 
   "ident": "12345678901",
   "tema": "FOR",
-  "tidspunkt": "2026-04-20T10:00:00+02:00",
+  "tidspunkt": "2026-04-20T10:00:00",
 
   "kilde": {
     "system": "fp-abakus",
@@ -140,7 +140,8 @@ Foreldrepenger publiseres som:
 noe har skjedd. Konsumenter slår opp detaljer selv (Abakus, Gosys, m.m.).
 
 - `tema` er **rå kildekode** fra fp-abakus (`FOR`/`OMS`/`FRI`) — ikke konvertert.
-- `tidspunkt` er publiseringstid fra kilden (ikke vedtakstidspunkt).
+- `tidspunkt` er publiseringstid fra kilden (ikke vedtakstidspunkt),
+  normalisert til `LocalDateTime` i Europe/Oslo for å gjøre konsumering enklere.
 - Sykmelding er ennå ikke aktivert — venter på ACL og format-bekreftelse fra TSM.
 
 Se [`andre-ytelse-mottatt.md`](andre-ytelse-mottatt.md) for full kontrakt og rationale.
