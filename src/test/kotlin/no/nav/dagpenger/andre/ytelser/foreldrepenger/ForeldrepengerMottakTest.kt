@@ -1,5 +1,6 @@
 package no.nav.dagpenger.andre.ytelser.foreldrepenger
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
@@ -19,23 +20,24 @@ class ForeldrepengerMottakTest {
 
     @Test
     fun `skal publisere andre_ytelse_mottatt for tema FOR`() {
-        testRapid.sendTestMessage(vedtakEkstern(tema = "FOR"))
+        testRapid.sendTestMessage(vedtakEkstern(ident = "12345678901", tema = "FOR"))
 
-        testRapid.inspektør.size shouldBe 0
+        testRapid.inspektør.size shouldBe 1
+        val event: JsonNode = testRapid.inspektør.message(0)
+        event["@event_name"].asText() shouldBe "andre_ytelse_mottatt"
+        event["ident"].asText() shouldBe "12345678901"
+        event["tema"].asText() shouldBe "FOR"
+        event["tidspunkt"].asText() shouldBe "2026-04-17T08:30:00+02:00"
+        event["kilde"]["system"].asText() shouldBe "fp-abakus"
+        event["kilde"]["topic"].asText() shouldBe "teamforeldrepenger.vedtak-ekstern"
     }
 
     @Test
-    fun `skal publisere andre_ytelse_mottatt for tema OMS`() {
+    fun `skal videresende rå tema OMS uten konvertering`() {
         testRapid.sendTestMessage(vedtakEkstern(ident = "98765432100", tema = "OMS"))
 
-        testRapid.inspektør.size shouldBe 0
-    }
-
-    @Test
-    fun `skal ignorere melding med ukjent tema`() {
-        testRapid.sendTestMessage(vedtakEkstern(tema = "UKJENT"))
-
-        testRapid.inspektør.size shouldBe 0
+        testRapid.inspektør.size shouldBe 1
+        testRapid.inspektør.message(0)["tema"].asText() shouldBe "OMS"
     }
 
     @Test

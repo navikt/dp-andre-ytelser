@@ -8,7 +8,6 @@ import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageProblems
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.dagpenger.andre.ytelser.Tema
 
 private val log = KotlinLogging.logger {}
 private val sikkerlogg = KotlinLogging.logger("tjenestekall")
@@ -19,6 +18,7 @@ internal class ForeldrepengerMottak(
     companion object {
         const val TOPIC = "teamforeldrepenger.vedtak-ekstern"
         const val SYSTEM = "fp-abakus"
+        const val EVENT_NAME = "andre_ytelse_mottatt"
     }
 
     init {
@@ -35,21 +35,31 @@ internal class ForeldrepengerMottak(
         meterRegistry: MeterRegistry,
     ) {
         val ident = packet["personidentifikator"].asText()
-        val kildeTema = packet["tema"].asText()
+        val tema = packet["tema"].asText()
         val tidspunkt = packet["tidspunkt"].asText()
         val maskertIdent = ident.take(6) + "*****"
 
-        val tema = Tema.fraKildeTema(kildeTema)
-        if (tema == null) {
-            log.warn { "Ukjent tema=$kildeTema fra $TOPIC — hopper over" }
-            return
-        }
+        log.info { "Mottok vedtak fra foreldrepenger: tema=$tema, tidspunkt=$tidspunkt" }
+        sikkerlogg.info { "Mottok vedtak fra foreldrepenger: ident=$maskertIdent, tema=$tema, tidspunkt=$tidspunkt" }
 
-        log.info { "Mottok vedtak fra foreldrepenger: tema=${tema.name}, tidspunkt=$tidspunkt" }
-        sikkerlogg.info { "Mottok vedtak fra foreldrepenger: ident=$maskertIdent, tema=${tema.name}, tidspunkt=$tidspunkt" }
+        val event =
+            JsonMessage.newMessage(
+                EVENT_NAME,
+                mapOf(
+                    "ident" to ident,
+                    "tema" to tema,
+                    "tidspunkt" to tidspunkt,
+                    "kilde" to
+                        mapOf(
+                            "system" to SYSTEM,
+                            "topic" to TOPIC,
+                        ),
+                ),
+            )
+        context.publish(ident, event.toJson())
 
         meterRegistry
-            .counter("ytelse_vedtak_mottatt_total", "tema", tema.name, "kilde", SYSTEM)
+            .counter("ytelse_vedtak_mottatt_total", "tema", tema, "kilde", SYSTEM)
             .increment()
     }
 

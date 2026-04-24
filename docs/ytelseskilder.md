@@ -115,9 +115,9 @@ Legg til `dp-andre-ytelser: read` for topicet `tsm.sykmeldinger`.
 
 ---
 
-## Planlagt event-format (ikke implementert ennå)
+## Event-format på rapiden (`andre_ytelse_mottatt`)
 
-Når vi er klare til å publisere på rapiden:
+Foreldrepenger publiseres som:
 
 ```json
 {
@@ -126,8 +126,8 @@ Når vi er klare til å publisere på rapiden:
   "@opprettet": "2026-04-23T14:00:00Z",
 
   "ident": "12345678901",
-  "tema": "FORELDREPENGER",
-  "tidspunkt": "2026-04-20T10:00:00Z",
+  "tema": "FOR",
+  "tidspunkt": "2026-04-20T10:00:00+02:00",
 
   "kilde": {
     "system": "fp-abakus",
@@ -136,7 +136,14 @@ Når vi er klare til å publisere på rapiden:
 }
 ```
 
-`tema` er vår normaliserte enum — se `Tema.kt`.
+**Designprinsipp:** dp-andre-ytelser er en ren signalformidler — vi videresender at
+noe har skjedd. Konsumenter slår opp detaljer selv (Abakus, Gosys, m.m.).
+
+- `tema` er **rå kildekode** fra fp-abakus (`FOR`/`OMS`/`FRI`) — ikke konvertert.
+- `tidspunkt` er publiseringstid fra kilden (ikke vedtakstidspunkt).
+- Sykmelding er ennå ikke aktivert — venter på ACL og format-bekreftelse fra TSM.
+
+Se [`andre-ytelse-mottatt.md`](andre-ytelse-mottatt.md) for full kontrakt og rationale.
 
 ---
 
@@ -144,5 +151,5 @@ Når vi er klare til å publisere på rapiden:
 
 - [ ] Få tilgang til `tsm.sykmeldinger` (PR mot tsm-iac)
 - [ ] Verifiser at SykmeldingMottak mottar meldinger i dev
-- [ ] Beslutt når vi skal aktivere publisering til rapiden
+- [ ] Aktiver publisering for sykmelding når format er bekreftet av TSM
 - [ ] Avklar med `dp-saksbehandling-frontend` hva de trenger fra eventet
