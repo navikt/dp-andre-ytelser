@@ -15,7 +15,7 @@ internal object Configuration {
                 "KAFKA_CONSUMER_GROUP_ID" to "$APP_NAME-v1",
                 "KAFKA_RAPID_TOPIC" to "teamdagpenger.rapid.v1",
                 "KAFKA_RESET_POLICY" to "latest",
-                "KAFKA_EXTRA_TOPIC" to "teamforeldrepenger.vedtak-ekstern,tsm.sykmeldinger",
+                "KAFKA_EXTRA_TOPIC" to "teamforeldrepenger.vedtak-ekstern",
             ),
         )
 
