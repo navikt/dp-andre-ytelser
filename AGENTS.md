@@ -47,7 +47,7 @@ Se `docs/ytelseskilder.md` for full analyse. Oppsummert:
 
 ```json
 {
-  "@event_name": "andre_ytelse_mottatt",
+  "@event_name": "annen_ytelse_endret",
   "ident": "12345678901",
   "tema": "FORELDREPENGER",
   "tidspunkt": "2026-04-20T10:00:00Z",

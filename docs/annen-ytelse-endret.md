@@ -1,4 +1,4 @@
-# Forslag: `andre_ytelse_mottatt` på dagpenger-rapiden
+# Forslag: `annen_ytelse_endret` på dagpenger-rapiden
 
 ## TL;DR
 
@@ -8,7 +8,7 @@ foreldrepenger.
 
 ```json
 {
-  "@event_name": "andre_ytelse_mottatt",
+  "@event_name": "annen_ytelse_endret",
   "ident": "12345678901",
   "tema": "FOR",
   "tidspunkt": "2026-04-24T10:59:42+02:00",
@@ -25,7 +25,7 @@ foreldrepenger.
 
 | Felt | Type | Beskrivelse |
 |------|------|-------------|
-| `@event_name` | string | Alltid `"andre_ytelse_mottatt"` |
+| `@event_name` | string | Alltid `"annen_ytelse_endret"` |
 | `ident` | string | Fnr |
 | `tema` | string | Rå tema-kode fra kilden (se tabell under) |
 | `tidspunkt` | ISO-8601 | Når kildesystemet publiserte — **ikke** vedtakstidspunkt |

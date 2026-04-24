@@ -115,13 +115,13 @@ Legg til `dp-andre-ytelser: read` for topicet `tsm.sykmeldinger`.
 
 ---
 
-## Event-format på rapiden (`andre_ytelse_mottatt`)
+## Event-format på rapiden (`annen_ytelse_endret`)
 
 Foreldrepenger publiseres som:
 
 ```json
 {
-  "@event_name": "andre_ytelse_mottatt",
+  "@event_name": "annen_ytelse_endret",
   "@id": "uuid-v4",
   "@opprettet": "2026-04-23T14:00:00Z",
 

@@ -18,7 +18,7 @@ internal class ForeldrepengerMottak(
     companion object {
         const val TOPIC = "teamforeldrepenger.vedtak-ekstern"
         const val SYSTEM = "fp-abakus"
-        const val EVENT_NAME = "andre_ytelse_mottatt"
+        const val EVENT_NAME = "annen_ytelse_endret"
     }
 
     init {
