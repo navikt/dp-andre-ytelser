@@ -8,6 +8,8 @@ import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageProblems
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.core.instrument.MeterRegistry
+import no.nav.dagpenger.andre.ytelser.melding.AnnenYtelseEndret
+import no.nav.dagpenger.andre.ytelser.melding.AnnenYtelseEndretSerializer
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -23,7 +25,6 @@ internal class ForeldrepengerMottak(
     companion object {
         const val TOPIC = "teamforeldrepenger.vedtak-ekstern"
         const val SYSTEM = "fp-abakus"
-        const val EVENT_NAME = "annen_ytelse_endret"
     }
 
     init {
@@ -49,20 +50,13 @@ internal class ForeldrepengerMottak(
         sikkerlogg.info { "Mottok vedtak fra foreldrepenger: ident=$maskertIdent, tema=$tema, tidspunkt=$tidspunkt" }
 
         val event =
-            JsonMessage.newMessage(
-                EVENT_NAME,
-                mapOf(
-                    "ident" to ident,
-                    "tema" to tema,
-                    "tidspunkt" to tidspunkt,
-                    "kilde" to
-                        mapOf(
-                            "system" to SYSTEM,
-                            "topic" to TOPIC,
-                        ),
-                ),
+            AnnenYtelseEndret(
+                ident = ident,
+                tema = tema,
+                tidspunkt = tidspunkt,
+                kilde = AnnenYtelseEndret.Kilde(system = SYSTEM, topic = TOPIC),
             )
-        context.publish(ident, event.toJson())
+        context.publish(ident, AnnenYtelseEndretSerializer.toJsonMessage(event).toJson())
 
         meterRegistry
             .counter("ytelse_vedtak_mottatt_total", "tema", tema, "kilde", SYSTEM)

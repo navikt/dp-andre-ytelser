@@ -16,6 +16,7 @@ dependencies {
 
     testImplementation(libs.rapids.and.rivers.test)
     testImplementation(libs.kotest.assertions.core)
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
 }
 
 configurations.all {
