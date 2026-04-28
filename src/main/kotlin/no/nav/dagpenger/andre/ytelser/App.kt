@@ -31,7 +31,8 @@ internal object App : RapidsConnection.StatusListener {
     fun start() = rapidsConnection.start()
 
     override fun onStartup(rapidsConnection: RapidsConnection) {
-        log.info { "Starter dp-andre-ytelser" }
+        val extraTopics = Configuration.config["KAFKA_EXTRA_TOPIC"] ?: "(ingen)"
+        log.info { "Starter dp-andre-ytelser — lytter på ekstra topics: $extraTopics" }
     }
 
     override fun onShutdown(rapidsConnection: RapidsConnection) {
