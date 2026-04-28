@@ -34,4 +34,6 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: java
-  env: []
+  env:
+    - name: KAFKA_EXTRA_TOPIC
+      value: "{{ extraTopics }}"
