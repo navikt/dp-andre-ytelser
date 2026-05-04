@@ -26,6 +26,11 @@ spec:
   prometheus:
     enabled: true
     path: /metrics
+  accessPolicy:
+    outbound:
+      rules:
+        - application: logging
+          namespace: nais-system
   observability:
     logging:
       destinations:
