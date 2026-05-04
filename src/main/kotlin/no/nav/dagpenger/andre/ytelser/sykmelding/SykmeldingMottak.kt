@@ -48,37 +48,43 @@ internal class SykmeldingMottak(
         metadata: MessageMetadata,
         meterRegistry: MeterRegistry,
     ) {
-        val sykmelding = packet["sykmelding"]
-        val ident = sykmelding["pasient"]["fnr"].asText()
-        val sykmeldingId = sykmelding["id"].asText()
-        val raaTidspunkt = sykmelding["metadata"]["mottattDato"].asText()
-        val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
-        val aktivitet = mapAktivitet(sykmelding["aktivitet"])
-        val maskertIdent = ident.take(6) + "*****"
+        runCatching {
+            val sykmelding = packet["sykmelding"]
+            val ident = sykmelding["pasient"]["fnr"].asText()
+            val sykmeldingId = sykmelding["id"].asText()
+            val raaTidspunkt = sykmelding["metadata"]["mottattDato"].asText()
+            val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
+            val aktivitet = mapAktivitet(sykmelding["aktivitet"])
+            val maskertIdent = ident.take(6) + "*****"
 
-        log.info { "Mottok OK sykmelding: tidspunkt=$tidspunkt" }
-        sikkerlogg.info {
-            "Mottok OK sykmelding fra $SYSTEM: ident=$maskertIdent, sykmeldingId=$sykmeldingId, " +
-                "tidspunkt=$tidspunkt, antallAktivitet=${aktivitet.size}"
+            log.info { "Mottok OK sykmelding: tidspunkt=$tidspunkt" }
+            sikkerlogg.info {
+                "Mottok OK sykmelding fra $SYSTEM: ident=$maskertIdent, sykmeldingId=$sykmeldingId, " +
+                    "tidspunkt=$tidspunkt, antallAktivitet=${aktivitet.size}"
+            }
+
+            val event =
+                AnnenYtelseEndret(
+                    ident = ident,
+                    tema = TEMA,
+                    tidspunkt = tidspunkt,
+                    kilde = AnnenYtelseEndret.Kilde(system = SYSTEM, topic = TOPIC),
+                    detaljer =
+                        SykmeldingDetaljer(
+                            id = sykmeldingId,
+                            aktivitet = aktivitet,
+                        ),
+                )
+            context.publish(ident, AnnenYtelseEndretSerializer.toJsonMessage(event).toJson())
+
+            meterRegistry
+                .counter("ytelse_vedtak_mottatt_total", "tema", TEMA, "kilde", SYSTEM)
+                .increment()
+        }.onFailure { e ->
+            log.error(e) { "Feil ved behandling av sykmelding-melding" }
+            sikkerlogg.error(e) { "Feil ved behandling av sykmelding-melding: ${packet.toJson()}" }
+            throw e
         }
-
-        val event =
-            AnnenYtelseEndret(
-                ident = ident,
-                tema = TEMA,
-                tidspunkt = tidspunkt,
-                kilde = AnnenYtelseEndret.Kilde(system = SYSTEM, topic = TOPIC),
-                detaljer =
-                    SykmeldingDetaljer(
-                        id = sykmeldingId,
-                        aktivitet = aktivitet,
-                    ),
-            )
-        context.publish(ident, AnnenYtelseEndretSerializer.toJsonMessage(event).toJson())
-
-        meterRegistry
-            .counter("ytelse_vedtak_mottatt_total", "tema", TEMA, "kilde", SYSTEM)
-            .increment()
     }
 
     // Pass-through av aktivitetsperioder: kun type, fom, tom.

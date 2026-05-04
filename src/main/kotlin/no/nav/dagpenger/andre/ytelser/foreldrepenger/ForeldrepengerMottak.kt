@@ -39,27 +39,33 @@ internal class ForeldrepengerMottak(
         metadata: MessageMetadata,
         meterRegistry: MeterRegistry,
     ) {
-        val ident = packet["personidentifikator"].asText()
-        val tema = packet["tema"].asText()
-        val raaTidspunkt = packet["tidspunkt"].asText()
-        val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
-        val maskertIdent = ident.take(6) + "*****"
+        runCatching {
+            val ident = packet["personidentifikator"].asText()
+            val tema = packet["tema"].asText()
+            val raaTidspunkt = packet["tidspunkt"].asText()
+            val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
+            val maskertIdent = ident.take(6) + "*****"
 
-        log.info { "Mottok vedtak fra foreldrepenger: tema=$tema, tidspunkt=$tidspunkt (rå=$raaTidspunkt)" }
-        sikkerlogg.info { "Mottok vedtak fra foreldrepenger: ident=$maskertIdent, tema=$tema, tidspunkt=$tidspunkt" }
+            log.info { "Mottok vedtak fra foreldrepenger: tema=$tema, tidspunkt=$tidspunkt (rå=$raaTidspunkt)" }
+            sikkerlogg.info { "Mottok vedtak fra foreldrepenger: ident=$maskertIdent, tema=$tema, tidspunkt=$tidspunkt" }
 
-        val event =
-            AnnenYtelseEndret(
-                ident = ident,
-                tema = tema,
-                tidspunkt = tidspunkt,
-                kilde = AnnenYtelseEndret.Kilde(system = SYSTEM, topic = TOPIC),
-            )
-        context.publish(ident, AnnenYtelseEndretSerializer.toJsonMessage(event).toJson())
+            val event =
+                AnnenYtelseEndret(
+                    ident = ident,
+                    tema = tema,
+                    tidspunkt = tidspunkt,
+                    kilde = AnnenYtelseEndret.Kilde(system = SYSTEM, topic = TOPIC),
+                )
+            context.publish(ident, AnnenYtelseEndretSerializer.toJsonMessage(event).toJson())
 
-        meterRegistry
-            .counter("ytelse_vedtak_mottatt_total", "tema", tema, "kilde", SYSTEM)
-            .increment()
+            meterRegistry
+                .counter("ytelse_vedtak_mottatt_total", "tema", tema, "kilde", SYSTEM)
+                .increment()
+        }.onFailure { e ->
+            log.error(e) { "Feil ved behandling av foreldrepenger-melding" }
+            sikkerlogg.error(e) { "Feil ved behandling av foreldrepenger-melding: ${packet.toJson()}" }
+            throw e
+        }
     }
 
     private fun normaliserTilOsloTid(raa: String): LocalDateTime = OffsetDateTime.parse(raa).atZoneSameInstant(OSLO).toLocalDateTime()
