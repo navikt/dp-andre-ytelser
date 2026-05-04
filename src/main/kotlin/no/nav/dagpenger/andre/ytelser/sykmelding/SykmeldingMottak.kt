@@ -74,7 +74,9 @@ internal class SykmeldingMottak(
                             aktivitet = aktivitet,
                         ),
                 )
-            context.publish(ident, AnnenYtelseEndretSerializer.toJsonMessage(event).toJson())
+            val message = AnnenYtelseEndretSerializer.toJsonMessage(event).toJson()
+            sikkerlogg.info { "Publiserer: $message" }
+            context.publish(ident, message)
 
             meterRegistry
                 .counter("ytelse_vedtak_mottatt_total", "tema", TEMA, "kilde", SYSTEM)
@@ -102,5 +104,6 @@ internal class SykmeldingMottak(
             }
         }
 
-    private fun normaliserTilOsloTid(raa: String): LocalDateTime = OffsetDateTime.parse(raa).atZoneSameInstant(OSLO).toLocalDateTime()
+    private fun normaliserTilOsloTid(raa: String): LocalDateTime =
+        OffsetDateTime.parse(raa).atZoneSameInstant(OSLO).toLocalDateTime()
 }
