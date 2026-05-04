@@ -104,6 +104,5 @@ internal class SykmeldingMottak(
             }
         }
 
-    private fun normaliserTilOsloTid(raa: String): LocalDateTime =
-        OffsetDateTime.parse(raa).atZoneSameInstant(OSLO).toLocalDateTime()
+    private fun normaliserTilOsloTid(raa: String): LocalDateTime = OffsetDateTime.parse(raa).atZoneSameInstant(OSLO).toLocalDateTime()
 }
