@@ -55,11 +55,10 @@ internal class SykmeldingMottak(
             val raaTidspunkt = sykmelding["metadata"]["mottattDato"].asText()
             val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
             val aktivitet = mapAktivitet(sykmelding["aktivitet"])
-            val maskertIdent = ident.take(6) + "*****"
 
             log.info { "Mottok OK sykmelding: tidspunkt=$tidspunkt" }
             sikkerlogg.info {
-                "Mottok OK sykmelding fra $SYSTEM: ident=$maskertIdent, sykmeldingId=$sykmeldingId, " +
+                "Mottok OK sykmelding fra $SYSTEM: ident=$ident, sykmeldingId=$sykmeldingId, " +
                     "tidspunkt=$tidspunkt, antallAktivitet=${aktivitet.size}"
             }
 

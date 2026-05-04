@@ -44,10 +44,9 @@ internal class ForeldrepengerMottak(
             val tema = packet["tema"].asText()
             val raaTidspunkt = packet["tidspunkt"].asText()
             val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
-            val maskertIdent = ident.take(6) + "*****"
 
             log.info { "Mottok vedtak fra foreldrepenger: tema=$tema, tidspunkt=$tidspunkt (rå=$raaTidspunkt)" }
-            sikkerlogg.info { "Mottok vedtak fra foreldrepenger: ident=$maskertIdent, tema=$tema, tidspunkt=$tidspunkt" }
+            sikkerlogg.info { "Mottok vedtak fra foreldrepenger: ident=$ident, tema=$tema, tidspunkt=$tidspunkt" }
 
             val event =
                 AnnenYtelseEndret(
