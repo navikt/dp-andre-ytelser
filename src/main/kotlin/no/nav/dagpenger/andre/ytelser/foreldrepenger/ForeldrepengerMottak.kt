@@ -4,7 +4,6 @@ import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 import com.github.navikt.tbd_libs.rapids_and_rivers.River
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageContext
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageMetadata
-import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageProblems
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.core.instrument.MeterRegistry
@@ -64,13 +63,4 @@ internal class ForeldrepengerMottak(
     }
 
     private fun normaliserTilOsloTid(raa: String): LocalDateTime = OffsetDateTime.parse(raa).atZoneSameInstant(OSLO).toLocalDateTime()
-
-    override fun onError(
-        problems: MessageProblems,
-        context: MessageContext,
-        metadata: MessageMetadata,
-    ) {
-        log.error { "Feil ved parsing av foreldrepenger vedtak-ekstern melding: $problems" }
-        sikkerlogg.error { "Feil ved parsing av foreldrepenger vedtak-ekstern melding: $problems" }
-    }
 }
