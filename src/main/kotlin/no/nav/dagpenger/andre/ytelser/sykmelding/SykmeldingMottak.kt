@@ -1,6 +1,5 @@
 package no.nav.dagpenger.andre.ytelser.sykmelding
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 import com.github.navikt.tbd_libs.rapids_and_rivers.River
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageContext
@@ -11,6 +10,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import no.nav.dagpenger.andre.ytelser.melding.AnnenYtelseEndret
 import no.nav.dagpenger.andre.ytelser.melding.AnnenYtelseEndretSerializer
 import no.nav.dagpenger.andre.ytelser.melding.SykmeldingDetaljer
+import tools.jackson.databind.JsonNode
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -95,7 +95,7 @@ internal class SykmeldingMottak(
         if (node.isMissingNode || node.isNull) {
             emptyList()
         } else {
-            node.map { aktivitet ->
+            node.values().map { aktivitet ->
                 SykmeldingDetaljer.Aktivitet(
                     type = aktivitet["type"].asText(),
                     fom = LocalDate.parse(aktivitet["fom"].asText()),

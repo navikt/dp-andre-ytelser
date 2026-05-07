@@ -1,12 +1,12 @@
 package no.nav.dagpenger.andre.ytelser.sykmelding
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import tools.jackson.databind.JsonNode
 
 class SykmeldingMottakTest {
     private val testRapid = TestRapid()

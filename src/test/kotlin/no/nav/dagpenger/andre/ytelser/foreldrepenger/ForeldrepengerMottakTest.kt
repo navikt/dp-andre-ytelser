@@ -1,10 +1,10 @@
 package no.nav.dagpenger.andre.ytelser.foreldrepenger
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import tools.jackson.databind.JsonNode
 
 class ForeldrepengerMottakTest {
     private val testRapid = TestRapid()
