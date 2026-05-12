@@ -3,6 +3,7 @@ package no.nav.dagpenger.andre.ytelser
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.dagpenger.andre.ytelser.foreldrepenger.ForeldrepengerMottak
+import no.nav.dagpenger.andre.ytelser.institusjon.InstitusjonMottak
 import no.nav.dagpenger.andre.ytelser.sykmelding.SykmeldingMottak
 import no.nav.helse.rapids_rivers.RapidApplication
 
@@ -22,6 +23,7 @@ internal object App : RapidsConnection.StatusListener {
         RapidApplication.create(Configuration.config).also {
             ForeldrepengerMottak(it)
             SykmeldingMottak(it)
+            InstitusjonMottak(it)
         }
 
     init {
