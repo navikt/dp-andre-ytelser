@@ -22,17 +22,17 @@ class SykmeldingMottakTest {
 
     @Test
     fun `skal publisere annen_ytelse_endret for OK sykmelding med tema SYM`() {
-        testRapid.sendTestMessage(sykmeldingRecord(fnr = "12345678901", sykmeldingId = "syk-1"))
+        testRapid.sendTestMessage(sykmeldingRecord(fnr = "12345678901", sykmeldingId = "syk-1"), "test-key", "tsm.sykmeldinger")
 
         testRapid.inspektør.size shouldBe 1
         val event: JsonNode = testRapid.inspektør.message(0)
-        event["@event_name"].asText() shouldBe "annen_ytelse_endret"
-        event["ident"].asText() shouldBe "12345678901"
-        event["tema"].asText() shouldBe "SYM"
-        event["tidspunkt"].asText() shouldBe "2026-04-17T08:30:00"
-        event["kilde"]["system"].asText() shouldBe "tsm"
-        event["kilde"]["topic"].asText() shouldBe "tsm.sykmeldinger"
-        event["sykmelding"]["id"].asText() shouldBe "syk-1"
+        event["@event_name"].textValue() shouldBe "annen_ytelse_endret"
+        event["ident"].textValue() shouldBe "12345678901"
+        event["tema"].textValue() shouldBe "SYM"
+        event["tidspunkt"].textValue() shouldBe "2026-04-17T08:30:00"
+        event["kilde"]["system"].textValue() shouldBe "tsm"
+        event["kilde"]["topic"].textValue() shouldBe "tsm.sykmeldinger"
+        event["sykmelding"]["id"].textValue() shouldBe "syk-1"
     }
 
     @Test
@@ -58,26 +58,28 @@ class SykmeldingMottakTest {
                     ]
                     """.trimIndent(),
             ),
+            "test-key",
+            "tsm.sykmeldinger",
         )
 
         val aktivitet = testRapid.inspektør.message(0)["sykmelding"]["aktivitet"]
         aktivitet.size() shouldBe 2
 
-        aktivitet[0]["type"].asText() shouldBe "AKTIVITET_IKKE_MULIG"
-        aktivitet[0]["fom"].asText() shouldBe "2026-04-15"
-        aktivitet[0]["tom"].asText() shouldBe "2026-04-30"
+        aktivitet[0]["type"].textValue() shouldBe "AKTIVITET_IKKE_MULIG"
+        aktivitet[0]["fom"].textValue() shouldBe "2026-04-15"
+        aktivitet[0]["tom"].textValue() shouldBe "2026-04-30"
         aktivitet[0].has("medisinskArsak") shouldBe false
 
-        aktivitet[1]["type"].asText() shouldBe "GRADERT"
-        aktivitet[1]["fom"].asText() shouldBe "2026-05-01"
-        aktivitet[1]["tom"].asText() shouldBe "2026-05-15"
+        aktivitet[1]["type"].textValue() shouldBe "GRADERT"
+        aktivitet[1]["fom"].textValue() shouldBe "2026-05-01"
+        aktivitet[1]["tom"].textValue() shouldBe "2026-05-15"
         aktivitet[1].has("grad") shouldBe false
         aktivitet[1].has("reisetilskudd") shouldBe false
     }
 
     @Test
     fun `skal håndtere tom aktivitetsliste`() {
-        testRapid.sendTestMessage(sykmeldingRecord(aktivitet = "[]"))
+        testRapid.sendTestMessage(sykmeldingRecord(aktivitet = "[]"), "test-key", "tsm.sykmeldinger")
 
         testRapid.inspektør.size shouldBe 1
         testRapid.inspektør.message(0)["sykmelding"]["aktivitet"].size() shouldBe 0
@@ -86,22 +88,22 @@ class SykmeldingMottakTest {
     @ParameterizedTest
     @ValueSource(strings = ["INVALID", "PENDING", "MANUAL_PROCESSING", "OK_WITH_INFOTRYGD"])
     fun `skal filtrere bort sykmelding når validation status ikke er OK`(status: String) {
-        testRapid.sendTestMessage(sykmeldingRecord(validationStatus = status))
+        testRapid.sendTestMessage(sykmeldingRecord(validationStatus = status), "test-key", "tsm.sykmeldinger")
 
         testRapid.inspektør.size shouldBe 0
     }
 
     @Test
     fun `skal normalisere tidspunkt til Europe-Oslo LocalDateTime`() {
-        testRapid.sendTestMessage(sykmeldingRecord(mottattDato = "2026-04-17T06:30:00Z"))
+        testRapid.sendTestMessage(sykmeldingRecord(mottattDato = "2026-04-17T06:30:00Z"), "test-key", "tsm.sykmeldinger")
 
         // 06:30 UTC = 08:30 Oslo (CEST)
-        testRapid.inspektør.message(0)["tidspunkt"].asText() shouldBe "2026-04-17T08:30:00"
+        testRapid.inspektør.message(0)["tidspunkt"].textValue() shouldBe "2026-04-17T08:30:00"
     }
 
     @Test
     fun `skal ikke prosessere meldinger fra rapiden`() {
-        testRapid.sendTestMessage(rapidMelding())
+        testRapid.sendTestMessage(rapidMelding(), "test-key", "tsm.sykmeldinger")
 
         testRapid.inspektør.size shouldBe 0
     }

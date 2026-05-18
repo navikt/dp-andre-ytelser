@@ -22,57 +22,59 @@ class BarnepensjonMottakTest {
 
     @Test
     fun `skal publisere annen_ytelse_endret for barnepensjon-vedtak`() {
-        testRapid.sendTestMessage(vedtakshendelse())
+        testRapid.sendTestMessage(vedtakshendelse(), "test-key", "etterlatte.vedtakshendelser")
 
         testRapid.inspektør.size shouldBe 1
         val event: JsonNode = testRapid.inspektør.message(0)
-        event["@event_name"].asText() shouldBe "annen_ytelse_endret"
-        event["ident"].asText() shouldBe "12345678901"
-        event["tema"].asText() shouldBe "EYB"
-        event["tidspunkt"].asText() shouldBe "2026-05-12T00:00:00"
-        event["kilde"]["system"].asText() shouldBe "etterlatte-behandling"
-        event["kilde"]["topic"].asText() shouldBe "etterlatte.vedtakshendelser"
+        event["@event_name"].textValue() shouldBe "annen_ytelse_endret"
+        event["ident"].textValue() shouldBe "12345678901"
+        event["tema"].textValue() shouldBe "EYB"
+        event["tidspunkt"].textValue() shouldBe "2026-05-12T00:00:00"
+        event["kilde"]["system"].textValue() shouldBe "etterlatte-behandling"
+        event["kilde"]["topic"].textValue() shouldBe "etterlatte.vedtakshendelser"
     }
 
     @Test
     fun `skal videresende vedtaksdetaljer`() {
         testRapid.sendTestMessage(
             vedtakshendelse(vedtakId = 99, type = "INNVILGELSE", vedtaksdato = "2026-05-12", virkningFom = "2026-06-01"),
+            "test-key",
+            "etterlatte.vedtakshendelser",
         )
 
         val bp = testRapid.inspektør.message(0)["barnepensjon"]
-        bp["vedtakId"].asLong() shouldBe 99
-        bp["type"].asText() shouldBe "INNVILGELSE"
-        bp["vedtaksdato"].asText() shouldBe "2026-05-12"
-        bp["virkningFom"].asText() shouldBe "2026-06-01"
+        bp["vedtakId"].longValue() shouldBe 99
+        bp["type"].textValue() shouldBe "INNVILGELSE"
+        bp["vedtaksdato"].textValue() shouldBe "2026-05-12"
+        bp["virkningFom"].textValue() shouldBe "2026-06-01"
     }
 
     @ParameterizedTest
     @ValueSource(strings = ["AVSLAG", "INNVILGELSE", "ENDRING", "REGULERING", "OPPHOER"])
     fun `skal håndtere alle vedtakstyper`(type: String) {
-        testRapid.sendTestMessage(vedtakshendelse(type = type))
+        testRapid.sendTestMessage(vedtakshendelse(type = type), "test-key", "etterlatte.vedtakshendelser")
 
         testRapid.inspektør.size shouldBe 1
-        testRapid.inspektør.message(0)["barnepensjon"]["type"].asText() shouldBe type
+        testRapid.inspektør.message(0)["barnepensjon"]["type"].textValue() shouldBe type
     }
 
     @Test
     fun `skal filtrere bort OMS-hendelser`() {
-        testRapid.sendTestMessage(vedtakshendelse(sakstype = "OMS"))
+        testRapid.sendTestMessage(vedtakshendelse(sakstype = "OMS"), "test-key", "etterlatte.vedtakshendelser")
 
         testRapid.inspektør.size shouldBe 0
     }
 
     @Test
     fun `skal ikke prosessere meldinger fra rapiden`() {
-        testRapid.sendTestMessage(rapidMelding())
+        testRapid.sendTestMessage(rapidMelding(), "test-key", "etterlatte.vedtakshendelser")
 
         testRapid.inspektør.size shouldBe 0
     }
 
     @Test
     fun `skal håndtere vedtak uten virkningFom`() {
-        testRapid.sendTestMessage(vedtakshendelse(virkningFom = null))
+        testRapid.sendTestMessage(vedtakshendelse(virkningFom = null), "test-key", "etterlatte.vedtakshendelser")
 
         testRapid.inspektør.size shouldBe 1
         testRapid.inspektør.message(0)["barnepensjon"].has("virkningFom") shouldBe false

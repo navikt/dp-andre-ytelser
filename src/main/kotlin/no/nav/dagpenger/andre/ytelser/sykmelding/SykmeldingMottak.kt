@@ -2,13 +2,9 @@ package no.nav.dagpenger.andre.ytelser.sykmelding
 
 import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 import com.github.navikt.tbd_libs.rapids_and_rivers.River
-import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageContext
-import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageMetadata
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
-import io.github.oshai.kotlinlogging.KotlinLogging
-import io.micrometer.core.instrument.MeterRegistry
+import no.nav.dagpenger.andre.ytelser.AbstractMottak
 import no.nav.dagpenger.andre.ytelser.melding.AnnenYtelseEndret
-import no.nav.dagpenger.andre.ytelser.melding.AnnenYtelseEndretSerializer
 import no.nav.dagpenger.andre.ytelser.melding.SykmeldingDetaljer
 import tools.jackson.databind.JsonNode
 import java.time.LocalDate
@@ -16,17 +12,15 @@ import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
 
-private val log = KotlinLogging.logger {}
-private val sikkerlogg = KotlinLogging.logger("tjenestekall")
-
 private val OSLO = ZoneId.of("Europe/Oslo")
 
 internal class SykmeldingMottak(
     rapidsConnection: RapidsConnection,
-) : River.PacketListener {
+) : AbstractMottak() {
+    override val topic = "tsm.sykmeldinger"
+    override val system = "tsm"
+
     companion object {
-        const val TOPIC = "tsm.sykmeldinger"
-        const val SYSTEM = "tsm"
         const val TEMA = "SYM"
     }
 
@@ -34,63 +28,38 @@ internal class SykmeldingMottak(
         River(rapidsConnection)
             .precondition {
                 it.forbid("@event_name")
-                // Vi reagerer kun på godkjente sykmeldinger.
-                // AVVIST/PENDING-sykmeldinger filtreres bort — dp-saksbehandling
-                // skal kun trigge utredning når sykmeldingen er gyldig.
                 it.requireValue("validation.status", "OK")
             }.validate { it.requireKey("sykmelding", "validation") }
             .register(this)
     }
 
-    override fun onPacket(
-        packet: JsonMessage,
-        context: MessageContext,
-        metadata: MessageMetadata,
-        meterRegistry: MeterRegistry,
-    ) {
-        runCatching {
-            val sykmelding = packet["sykmelding"]
-            val ident = sykmelding["pasient"]["fnr"].textValue()
-            val sykmeldingId = sykmelding["id"].textValue()
-            val raaTidspunkt = sykmelding["metadata"]["mottattDato"].textValue()
-            val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
-            val aktivitet = mapAktivitet(sykmelding["aktivitet"])
+    override fun JsonMessage.parseEvent(): AnnenYtelseEndret {
+        val sykmelding = this["sykmelding"]
+        val ident = sykmelding["pasient"]["fnr"].textValue()
+        val sykmeldingId = sykmelding["id"].textValue()
+        val raaTidspunkt = sykmelding["metadata"]["mottattDato"].textValue()
+        val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
+        val aktivitet = mapAktivitet(sykmelding["aktivitet"])
 
-            log.info { "Mottok OK sykmelding: tidspunkt=$tidspunkt" }
-            sikkerlogg.info {
-                "Mottok OK sykmelding fra $SYSTEM: ident=$ident, sykmeldingId=$sykmeldingId, " +
-                    "tidspunkt=$tidspunkt, antallAktivitet=${aktivitet.size}"
-            }
-
-            val event =
-                AnnenYtelseEndret(
-                    ident = ident,
-                    tema = TEMA,
-                    tidspunkt = tidspunkt,
-                    kilde = AnnenYtelseEndret.Kilde(system = SYSTEM, topic = TOPIC),
-                    detaljer =
-                        SykmeldingDetaljer(
-                            id = sykmeldingId,
-                            aktivitet = aktivitet,
-                        ),
-                )
-            val message = AnnenYtelseEndretSerializer.toJsonMessage(event).toJson()
-            sikkerlogg.info { "Publiserer: $message" }
-            context.publish(ident, message)
-
-            meterRegistry
-                .counter("ytelse_vedtak_mottatt_total", "tema", TEMA, "kilde", SYSTEM)
-                .increment()
-        }.onFailure { e ->
-            log.error(e) { "Feil ved behandling av sykmelding-melding" }
-            sikkerlogg.error(e) { "Feil ved behandling av sykmelding-melding: ${packet.toJson()}" }
-            throw e
+        log.info { "Mottok OK sykmelding: tidspunkt=$tidspunkt" }
+        sikkerlogg.info {
+            "Mottok OK sykmelding fra $system: ident=$ident, sykmeldingId=$sykmeldingId, " +
+                "tidspunkt=$tidspunkt, antallAktivitet=${aktivitet.size}"
         }
+
+        return AnnenYtelseEndret(
+            ident = ident,
+            tema = TEMA,
+            tidspunkt = tidspunkt,
+            kilde = AnnenYtelseEndret.Kilde(system = system, topic = topic),
+            detaljer =
+                SykmeldingDetaljer(
+                    id = sykmeldingId,
+                    aktivitet = aktivitet,
+                ),
+        )
     }
 
-    // Pass-through av aktivitetsperioder: kun type, fom, tom.
-    // Detaljer som grad, antall behandlingsdager, medisinsk årsak og fritekst
-    // utelates bevisst — dp-konsumenter trenger kun trigger-signalet.
     private fun mapAktivitet(node: JsonNode): List<SykmeldingDetaljer.Aktivitet> =
         if (node.isMissingNode || node.isNull) {
             emptyList()

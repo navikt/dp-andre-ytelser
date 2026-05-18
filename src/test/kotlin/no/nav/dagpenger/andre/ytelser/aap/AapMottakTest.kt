@@ -21,28 +21,28 @@ class AapMottakTest {
 
     @Test
     fun `skal publisere annen_ytelse_endret for AAP-vedtak`() {
-        testRapid.sendTestMessage(aapHendelse(ident = "12345678901", hendelse = "VEDTAK"), "12345678901", AapMottak.TOPIC)
+        testRapid.sendTestMessage(aapHendelse(ident = "12345678901", hendelse = "VEDTAK"), "12345678901", "aap.api-intern-hendelse-v1")
 
         testRapid.inspektør.size shouldBe 1
         val event: JsonNode = testRapid.inspektør.message(0)
-        event["@event_name"].asText() shouldBe "annen_ytelse_endret"
-        event["ident"].asText() shouldBe "12345678901"
-        event["tema"].asText() shouldBe "AAP"
-        event["tidspunkt"].asText().shouldNotBeEmpty()
-        event["kilde"]["system"].asText() shouldBe "aap-api-intern"
-        event["kilde"]["topic"].asText() shouldBe "aap.api-intern-hendelse-v1"
+        event["@event_name"].textValue() shouldBe "annen_ytelse_endret"
+        event["ident"].textValue() shouldBe "12345678901"
+        event["tema"].textValue() shouldBe "AAP"
+        event["tidspunkt"].textValue().shouldNotBeEmpty()
+        event["kilde"]["system"].textValue() shouldBe "aap-api-intern"
+        event["kilde"]["topic"].textValue() shouldBe "aap.api-intern-hendelse-v1"
     }
 
     @Test
     fun `skal ignorere SOKNAD-hendelser`() {
-        testRapid.sendTestMessage(aapHendelse(hendelse = "SOKNAD"), "12345678901", AapMottak.TOPIC)
+        testRapid.sendTestMessage(aapHendelse(hendelse = "SOKNAD"), "12345678901", "aap.api-intern-hendelse-v1")
 
         testRapid.inspektør.size shouldBe 0
     }
 
     @Test
     fun `skal ikke prosessere meldinger fra rapiden`() {
-        testRapid.sendTestMessage(rapidMelding(), "12345678901", AapMottak.TOPIC)
+        testRapid.sendTestMessage(rapidMelding(), "12345678901", "aap.api-intern-hendelse-v1")
 
         testRapid.inspektør.size shouldBe 0
     }

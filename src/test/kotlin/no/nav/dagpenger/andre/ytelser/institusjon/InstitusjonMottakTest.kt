@@ -22,40 +22,44 @@ class InstitusjonMottakTest {
 
     @Test
     fun `skal publisere annen_ytelse_endret for institusjonsopphold`() {
-        testRapid.sendTestMessage(oppholdHendelse())
+        testRapid.sendTestMessage(oppholdHendelse(), "test-key", "team-rocket.institusjon-opphold-hendelser")
 
         testRapid.inspektør.size shouldBe 1
         val event: JsonNode = testRapid.inspektør.message(0)
-        event["@event_name"].asText() shouldBe "annen_ytelse_endret"
-        event["ident"].asText() shouldBe "12345678901"
-        event["tema"].asText() shouldBe "INST"
-        event["kilde"]["system"].asText() shouldBe "inst2"
-        event["kilde"]["topic"].asText() shouldBe "team-rocket.institusjon-opphold-hendelser"
+        event["@event_name"].textValue() shouldBe "annen_ytelse_endret"
+        event["ident"].textValue() shouldBe "12345678901"
+        event["tema"].textValue() shouldBe "INST"
+        event["kilde"]["system"].textValue() shouldBe "inst2"
+        event["kilde"]["topic"].textValue() shouldBe "team-rocket.institusjon-opphold-hendelser"
     }
 
     @Test
     fun `skal videresende oppholddetaljer`() {
-        testRapid.sendTestMessage(oppholdHendelse(oppholdId = 456, hendelseId = 123, type = "INNMELDING", kilde = "KDI"))
+        testRapid.sendTestMessage(
+            oppholdHendelse(oppholdId = 456, hendelseId = 123, type = "INNMELDING", kilde = "KDI"),
+            "test-key",
+            "team-rocket.institusjon-opphold-hendelser",
+        )
 
         val institusjon = testRapid.inspektør.message(0)["institusjon"]
-        institusjon["oppholdId"].asLong() shouldBe 456
-        institusjon["hendelseId"].asLong() shouldBe 123
-        institusjon["type"].asText() shouldBe "INNMELDING"
-        institusjon["kilde"].asText() shouldBe "KDI"
+        institusjon["oppholdId"].longValue() shouldBe 456
+        institusjon["hendelseId"].longValue() shouldBe 123
+        institusjon["type"].textValue() shouldBe "INNMELDING"
+        institusjon["kilde"].textValue() shouldBe "KDI"
     }
 
     @ParameterizedTest
     @ValueSource(strings = ["INNMELDING", "OPPDATERING", "UTMELDING", "ANNULERING"])
     fun `skal håndtere alle hendelsestyper`(type: String) {
-        testRapid.sendTestMessage(oppholdHendelse(type = type))
+        testRapid.sendTestMessage(oppholdHendelse(type = type), "test-key", "team-rocket.institusjon-opphold-hendelser")
 
         testRapid.inspektør.size shouldBe 1
-        testRapid.inspektør.message(0)["institusjon"]["type"].asText() shouldBe type
+        testRapid.inspektør.message(0)["institusjon"]["type"].textValue() shouldBe type
     }
 
     @Test
     fun `skal ikke prosessere meldinger fra rapiden`() {
-        testRapid.sendTestMessage(rapidMelding())
+        testRapid.sendTestMessage(rapidMelding(), "test-key", "team-rocket.institusjon-opphold-hendelser")
 
         testRapid.inspektør.size shouldBe 0
     }
