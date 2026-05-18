@@ -38,29 +38,38 @@ internal class AapMottak(
         metadata: MessageMetadata,
         meterRegistry: MeterRegistry,
     ) {
-        runCatching {
-            val ident = packet["ident"].asText()
-            val tidspunkt = LocalDateTime.now()
+        when (metadata.topic) {
+            TOPIC -> {
+                runCatching {
+                    val ident = packet["ident"].asText()
+                    val tidspunkt = LocalDateTime.now()
 
-            log.info { "Mottok AAP-vedtak: tidspunkt=$tidspunkt" }
-            sikkerlogg.info { "Mottok AAP-vedtak fra $SYSTEM: ident=$ident, tidspunkt=$tidspunkt" }
+                    log.info { "Mottok AAP-vedtak: tidspunkt=$tidspunkt" }
+                    sikkerlogg.info { "Mottok AAP-vedtak fra $SYSTEM: ident=$ident, tidspunkt=$tidspunkt" }
 
-            val event =
-                AnnenYtelseEndret(
-                    ident = ident,
-                    tema = TEMA,
-                    tidspunkt = tidspunkt,
-                    kilde = AnnenYtelseEndret.Kilde(system = SYSTEM, topic = TOPIC),
-                )
-            context.publish(ident, AnnenYtelseEndretSerializer.toJsonMessage(event).toJson())
+                    val event =
+                        AnnenYtelseEndret(
+                            ident = ident,
+                            tema = TEMA,
+                            tidspunkt = tidspunkt,
+                            kilde = AnnenYtelseEndret.Kilde(system = SYSTEM, topic = TOPIC),
+                        )
+                    context.publish(ident, AnnenYtelseEndretSerializer.toJsonMessage(event).toJson())
 
-            meterRegistry
-                .counter("ytelse_vedtak_mottatt_total", "tema", TEMA, "kilde", SYSTEM)
-                .increment()
-        }.onFailure { e ->
-            log.error(e) { "Feil ved behandling av AAP-melding" }
-            sikkerlogg.error(e) { "Feil ved behandling av AAP-melding: ${packet.toJson()}" }
-            throw e
+                    meterRegistry
+                        .counter("ytelse_vedtak_mottatt_total", "tema", TEMA, "kilde", SYSTEM)
+                        .increment()
+                }.onFailure { e ->
+                    log.error(e) { "Feil ved behandling av AAP-melding" }
+                    sikkerlogg.error(e) { "Feil ved behandling av AAP-melding: ${packet.toJson()}" }
+                    throw e
+                }
+
+            }
+
+            else -> {
+                log.warn { "Mottok melding fra uventet topic: ${metadata.topic}, ignorerer" }
+            }
         }
     }
 }

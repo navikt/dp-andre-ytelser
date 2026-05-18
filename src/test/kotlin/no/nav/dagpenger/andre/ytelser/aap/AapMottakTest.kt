@@ -21,7 +21,7 @@ class AapMottakTest {
 
     @Test
     fun `skal publisere annen_ytelse_endret for AAP-vedtak`() {
-        testRapid.sendTestMessage(aapHendelse(ident = "12345678901", hendelse = "VEDTAK"))
+        testRapid.sendTestMessage(aapHendelse(ident = "12345678901", hendelse = "VEDTAK"), "12345678901", AapMottak.TOPIC)
 
         testRapid.inspektør.size shouldBe 1
         val event: JsonNode = testRapid.inspektør.message(0)
@@ -35,14 +35,21 @@ class AapMottakTest {
 
     @Test
     fun `skal ignorere SOKNAD-hendelser`() {
-        testRapid.sendTestMessage(aapHendelse(hendelse = "SOKNAD"))
+        testRapid.sendTestMessage(aapHendelse(hendelse = "SOKNAD"), "12345678901", AapMottak.TOPIC)
 
         testRapid.inspektør.size shouldBe 0
     }
 
     @Test
     fun `skal ikke prosessere meldinger fra rapiden`() {
-        testRapid.sendTestMessage(rapidMelding())
+        testRapid.sendTestMessage(rapidMelding(), "12345678901", AapMottak.TOPIC)
+
+        testRapid.inspektør.size shouldBe 0
+    }
+
+    @Test
+    fun `skal ignorere meldinger fra feil topic`() {
+        testRapid.sendTestMessage(aapHendelse(hendelse = "VEDTAK"), "12345678901", "annet.topic")
 
         testRapid.inspektør.size shouldBe 0
     }
