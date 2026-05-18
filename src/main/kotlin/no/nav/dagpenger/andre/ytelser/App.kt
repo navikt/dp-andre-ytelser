@@ -2,6 +2,7 @@ package no.nav.dagpenger.andre.ytelser
 
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.dagpenger.andre.ytelser.aap.AapMottak
 import no.nav.dagpenger.andre.ytelser.barnepensjon.BarnepensjonMottak
 import no.nav.dagpenger.andre.ytelser.foreldrepenger.ForeldrepengerMottak
 import no.nav.dagpenger.andre.ytelser.institusjon.InstitusjonMottak
@@ -22,6 +23,7 @@ fun main() {
 internal object App : RapidsConnection.StatusListener {
     private val rapidsConnection =
         RapidApplication.create(Configuration.config).also {
+            AapMottak(it)
             ForeldrepengerMottak(it)
             SykmeldingMottak(it)
             InstitusjonMottak(it)
