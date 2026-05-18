@@ -3,7 +3,7 @@ package no.nav.dagpenger.andre.ytelser.barnepensjon
 import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 import com.github.navikt.tbd_libs.rapids_and_rivers.River
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
-import no.nav.dagpenger.andre.ytelser.AbstractMottak
+import no.nav.dagpenger.andre.ytelser.EksternTopicMottak
 import no.nav.dagpenger.andre.ytelser.melding.AnnenYtelseEndret
 import no.nav.dagpenger.andre.ytelser.melding.BarnepensjonDetaljer
 import java.time.LocalDate
@@ -12,7 +12,7 @@ import java.time.LocalTime
 
 internal class BarnepensjonMottak(
     rapidsConnection: RapidsConnection,
-) : AbstractMottak() {
+) : EksternTopicMottak() {
     override val topic = "etterlatte.vedtakshendelser"
     override val system = "etterlatte-behandling"
 

@@ -10,7 +10,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import no.nav.dagpenger.andre.ytelser.melding.AnnenYtelseEndret
 import no.nav.dagpenger.andre.ytelser.melding.AnnenYtelseEndretSerializer
 
-internal abstract class AbstractMottak : River.PacketListener {
+internal abstract class EksternTopicMottak : River.PacketListener {
     protected val log: KLogger = KotlinLogging.logger(this::class.java.name)
     protected val sikkerlogg: KLogger = KotlinLogging.logger("tjenestekall.${this::class.simpleName}")
 

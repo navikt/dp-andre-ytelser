@@ -3,14 +3,14 @@ package no.nav.dagpenger.andre.ytelser.institusjon
 import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 import com.github.navikt.tbd_libs.rapids_and_rivers.River
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
-import no.nav.dagpenger.andre.ytelser.AbstractMottak
+import no.nav.dagpenger.andre.ytelser.EksternTopicMottak
 import no.nav.dagpenger.andre.ytelser.melding.AnnenYtelseEndret
 import no.nav.dagpenger.andre.ytelser.melding.InstitusjonDetaljer
 import java.time.LocalDateTime
 
 internal class InstitusjonMottak(
     rapidsConnection: RapidsConnection,
-) : AbstractMottak() {
+) : EksternTopicMottak() {
     override val topic = "team-rocket.institusjon-opphold-hendelser"
     override val system = "inst2"
 

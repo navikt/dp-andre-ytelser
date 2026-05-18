@@ -3,7 +3,7 @@ package no.nav.dagpenger.andre.ytelser.sykmelding
 import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 import com.github.navikt.tbd_libs.rapids_and_rivers.River
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
-import no.nav.dagpenger.andre.ytelser.AbstractMottak
+import no.nav.dagpenger.andre.ytelser.EksternTopicMottak
 import no.nav.dagpenger.andre.ytelser.melding.AnnenYtelseEndret
 import no.nav.dagpenger.andre.ytelser.melding.SykmeldingDetaljer
 import tools.jackson.databind.JsonNode
@@ -16,7 +16,7 @@ private val OSLO = ZoneId.of("Europe/Oslo")
 
 internal class SykmeldingMottak(
     rapidsConnection: RapidsConnection,
-) : AbstractMottak() {
+) : EksternTopicMottak() {
     override val topic = "tsm.sykmeldinger"
     override val system = "tsm"
 
