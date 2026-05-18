@@ -29,7 +29,7 @@ internal abstract class EksternTopicMottak : River.PacketListener {
             topic -> {
                 runCatching {
                     val event = packet.parseEvent()
-                    log.info { "Mottok vedtak fra $system: ${event.toLogString()}" }
+                    log.info { "Mottok vedtak fra $system: $event" }
                     sikkerlogg.info { "Mottok vedtak fra $system: ${event.toSikkerLoggString()}" }
                     context.publish(event.ident, AnnenYtelseEndretSerializer.toJsonMessage(event).toJson())
                     meterRegistry

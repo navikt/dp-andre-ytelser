@@ -9,9 +9,10 @@ internal data class AnnenYtelseEndret(
     val kilde: Kilde,
     val detaljer: Detaljer = Detaljer.Tom,
 ) {
-    fun toLogString(): String = "tema=$tema, tidspunkt=$tidspunkt, kilde=${kilde.system}, detaljer=$detaljer"
+    override fun toString(): String = "AnnenYtelseEndret(tema=$tema, tidspunkt=$tidspunkt, kilde=${kilde.system}, detaljer=$detaljer)"
 
-    fun toSikkerLoggString(): String = "ident=${ident.take(6)}*****, ${toLogString()}"
+    fun toSikkerLoggString(): String =
+        "AnnenYtelseEndret(ident=$ident, tema=$tema, tidspunkt=$tidspunkt, kilde=${kilde.system}, detaljer=$detaljer)"
 
     data class Kilde(
         val system: String,
