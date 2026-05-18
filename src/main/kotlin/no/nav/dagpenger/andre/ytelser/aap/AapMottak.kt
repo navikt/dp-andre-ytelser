@@ -64,7 +64,6 @@ internal class AapMottak(
                     sikkerlogg.error(e) { "Feil ved behandling av AAP-melding: ${packet.toJson()}" }
                     throw e
                 }
-
             }
 
             else -> {
