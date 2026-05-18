@@ -9,6 +9,12 @@ internal data class AnnenYtelseEndret(
     val kilde: Kilde,
     val detaljer: Detaljer = Detaljer.Tom,
 ) {
+    fun toLogString(): String =
+        "tema=$tema, tidspunkt=$tidspunkt, kilde=${kilde.system}" +
+            detaljer.toMap().let { if (it.isNotEmpty()) ", detaljer=$it" else "" }
+
+    fun toSikkerLoggString(): String = "ident=${ident.take(6)}*****, ${toLogString()}"
+
     data class Kilde(
         val system: String,
         val topic: String,

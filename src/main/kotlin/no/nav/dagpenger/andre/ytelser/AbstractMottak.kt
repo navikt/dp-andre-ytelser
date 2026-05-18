@@ -29,6 +29,8 @@ internal abstract class AbstractMottak : River.PacketListener {
             topic -> {
                 runCatching {
                     val event = packet.parseEvent()
+                    log.info { "Mottok vedtak fra $system: ${event.toLogString()}" }
+                    sikkerlogg.info { "Mottok vedtak fra $system: ${event.toSikkerLoggString()}" }
                     context.publish(event.ident, AnnenYtelseEndretSerializer.toJsonMessage(event).toJson())
                     meterRegistry
                         .counter("ytelse_vedtak_mottatt_total", "tema", event.tema, "kilde", system)

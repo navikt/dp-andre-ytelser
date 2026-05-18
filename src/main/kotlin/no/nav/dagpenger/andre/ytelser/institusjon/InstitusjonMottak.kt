@@ -33,12 +33,6 @@ internal class InstitusjonMottak(
         val kilde = this["kilde"].textValue()
         val tidspunkt = LocalDateTime.now()
 
-        log.info { "Mottok institusjonsopphold-hendelse: type=$type, oppholdId=$oppholdId, kilde=$kilde" }
-        sikkerlogg.info {
-            "Mottok institusjonsopphold-hendelse: ident=$ident, type=$type, " +
-                "oppholdId=$oppholdId, hendelseId=$hendelseId, kilde=$kilde"
-        }
-
         return AnnenYtelseEndret(
             ident = ident,
             tema = TEMA,

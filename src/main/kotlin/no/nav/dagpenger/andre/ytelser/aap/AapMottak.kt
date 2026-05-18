@@ -30,9 +30,6 @@ internal class AapMottak(
         val ident = this["ident"].textValue()
         val tidspunkt = LocalDateTime.now()
 
-        log.info { "Mottok AAP-vedtak: tidspunkt=$tidspunkt" }
-        sikkerlogg.info { "Mottok AAP-vedtak fra $system: ident=$ident, tidspunkt=$tidspunkt" }
-
         return AnnenYtelseEndret(
             ident = ident,
             tema = TEMA,

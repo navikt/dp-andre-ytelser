@@ -30,9 +30,6 @@ internal class ForeldrepengerMottak(
         val raaTidspunkt = this["tidspunkt"].textValue()
         val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
 
-        log.info { "Mottok vedtak fra foreldrepenger: tema=$tema, tidspunkt=$tidspunkt (rå=$raaTidspunkt)" }
-        sikkerlogg.info { "Mottok vedtak fra foreldrepenger: ident=$ident, tema=$tema, tidspunkt=$tidspunkt" }
-
         return AnnenYtelseEndret(
             ident = ident,
             tema = tema,

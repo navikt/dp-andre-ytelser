@@ -39,12 +39,6 @@ internal class BarnepensjonMottak(
         val virkningFom = this["virkningFom"].takeUnless { it.isMissingNode }?.textValue()?.let { LocalDate.parse(it) }
         val tidspunkt = LocalDateTime.of(vedtaksdato, LocalTime.MIDNIGHT)
 
-        log.info { "Mottok barnepensjon-vedtak: type=$type, vedtakId=$vedtakId" }
-        sikkerlogg.info {
-            "Mottok barnepensjon-vedtak: ident=$ident, type=$type, " +
-                "vedtakId=$vedtakId, vedtaksdato=$vedtaksdato, virkningFom=$virkningFom"
-        }
-
         return AnnenYtelseEndret(
             ident = ident,
             tema = TEMA,

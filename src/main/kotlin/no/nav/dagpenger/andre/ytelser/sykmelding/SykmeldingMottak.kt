@@ -41,12 +41,6 @@ internal class SykmeldingMottak(
         val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
         val aktivitet = mapAktivitet(sykmelding["aktivitet"])
 
-        log.info { "Mottok OK sykmelding: tidspunkt=$tidspunkt" }
-        sikkerlogg.info {
-            "Mottok OK sykmelding fra $system: ident=$ident, sykmeldingId=$sykmeldingId, " +
-                "tidspunkt=$tidspunkt, antallAktivitet=${aktivitet.size}"
-        }
-
         return AnnenYtelseEndret(
             ident = ident,
             tema = TEMA,
