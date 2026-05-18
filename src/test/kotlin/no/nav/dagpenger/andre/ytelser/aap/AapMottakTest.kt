@@ -25,12 +25,12 @@ class AapMottakTest {
 
         testRapid.inspektør.size shouldBe 1
         val event: JsonNode = testRapid.inspektør.message(0)
-        event["@event_name"].textValue() shouldBe "annen_ytelse_endret"
-        event["ident"].textValue() shouldBe "12345678901"
-        event["tema"].textValue() shouldBe "AAP"
-        event["tidspunkt"].textValue().shouldNotBeEmpty()
-        event["kilde"]["system"].textValue() shouldBe "aap-api-intern"
-        event["kilde"]["topic"].textValue() shouldBe "aap.api-intern-hendelse-v1"
+        event["@event_name"].stringValue() shouldBe "annen_ytelse_endret"
+        event["ident"].stringValue() shouldBe "12345678901"
+        event["tema"].stringValue() shouldBe "AAP"
+        event["tidspunkt"].stringValue().shouldNotBeEmpty()
+        event["kilde"]["system"].stringValue() shouldBe "aap-api-intern"
+        event["kilde"]["topic"].stringValue() shouldBe "aap.api-intern-hendelse-v1"
     }
 
     @Test

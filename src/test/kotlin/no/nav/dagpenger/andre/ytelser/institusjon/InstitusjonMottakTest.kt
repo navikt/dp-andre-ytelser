@@ -26,11 +26,11 @@ class InstitusjonMottakTest {
 
         testRapid.inspektør.size shouldBe 1
         val event: JsonNode = testRapid.inspektør.message(0)
-        event["@event_name"].textValue() shouldBe "annen_ytelse_endret"
-        event["ident"].textValue() shouldBe "12345678901"
-        event["tema"].textValue() shouldBe "INST"
-        event["kilde"]["system"].textValue() shouldBe "inst2"
-        event["kilde"]["topic"].textValue() shouldBe "team-rocket.institusjon-opphold-hendelser"
+        event["@event_name"].stringValue() shouldBe "annen_ytelse_endret"
+        event["ident"].stringValue() shouldBe "12345678901"
+        event["tema"].stringValue() shouldBe "INST"
+        event["kilde"]["system"].stringValue() shouldBe "inst2"
+        event["kilde"]["topic"].stringValue() shouldBe "team-rocket.institusjon-opphold-hendelser"
     }
 
     @Test
@@ -44,8 +44,8 @@ class InstitusjonMottakTest {
         val institusjon = testRapid.inspektør.message(0)["institusjon"]
         institusjon["oppholdId"].longValue() shouldBe 456
         institusjon["hendelseId"].longValue() shouldBe 123
-        institusjon["type"].textValue() shouldBe "INNMELDING"
-        institusjon["kilde"].textValue() shouldBe "KDI"
+        institusjon["type"].stringValue() shouldBe "INNMELDING"
+        institusjon["kilde"].stringValue() shouldBe "KDI"
     }
 
     @ParameterizedTest
@@ -54,7 +54,7 @@ class InstitusjonMottakTest {
         testRapid.sendTestMessage(oppholdHendelse(type = type), "test-key", "team-rocket.institusjon-opphold-hendelser")
 
         testRapid.inspektør.size shouldBe 1
-        testRapid.inspektør.message(0)["institusjon"]["type"].textValue() shouldBe type
+        testRapid.inspektør.message(0)["institusjon"]["type"].stringValue() shouldBe type
     }
 
     @Test

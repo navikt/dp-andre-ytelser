@@ -26,13 +26,13 @@ class SykmeldingMottakTest {
 
         testRapid.inspektør.size shouldBe 1
         val event: JsonNode = testRapid.inspektør.message(0)
-        event["@event_name"].textValue() shouldBe "annen_ytelse_endret"
-        event["ident"].textValue() shouldBe "12345678901"
-        event["tema"].textValue() shouldBe "SYM"
-        event["tidspunkt"].textValue() shouldBe "2026-04-17T08:30:00"
-        event["kilde"]["system"].textValue() shouldBe "tsm"
-        event["kilde"]["topic"].textValue() shouldBe "tsm.sykmeldinger"
-        event["sykmelding"]["id"].textValue() shouldBe "syk-1"
+        event["@event_name"].stringValue() shouldBe "annen_ytelse_endret"
+        event["ident"].stringValue() shouldBe "12345678901"
+        event["tema"].stringValue() shouldBe "SYM"
+        event["tidspunkt"].stringValue() shouldBe "2026-04-17T08:30:00"
+        event["kilde"]["system"].stringValue() shouldBe "tsm"
+        event["kilde"]["topic"].stringValue() shouldBe "tsm.sykmeldinger"
+        event["sykmelding"]["id"].stringValue() shouldBe "syk-1"
     }
 
     @Test
@@ -65,14 +65,14 @@ class SykmeldingMottakTest {
         val aktivitet = testRapid.inspektør.message(0)["sykmelding"]["aktivitet"]
         aktivitet.size() shouldBe 2
 
-        aktivitet[0]["type"].textValue() shouldBe "AKTIVITET_IKKE_MULIG"
-        aktivitet[0]["fom"].textValue() shouldBe "2026-04-15"
-        aktivitet[0]["tom"].textValue() shouldBe "2026-04-30"
+        aktivitet[0]["type"].stringValue() shouldBe "AKTIVITET_IKKE_MULIG"
+        aktivitet[0]["fom"].stringValue() shouldBe "2026-04-15"
+        aktivitet[0]["tom"].stringValue() shouldBe "2026-04-30"
         aktivitet[0].has("medisinskArsak") shouldBe false
 
-        aktivitet[1]["type"].textValue() shouldBe "GRADERT"
-        aktivitet[1]["fom"].textValue() shouldBe "2026-05-01"
-        aktivitet[1]["tom"].textValue() shouldBe "2026-05-15"
+        aktivitet[1]["type"].stringValue() shouldBe "GRADERT"
+        aktivitet[1]["fom"].stringValue() shouldBe "2026-05-01"
+        aktivitet[1]["tom"].stringValue() shouldBe "2026-05-15"
         aktivitet[1].has("grad") shouldBe false
         aktivitet[1].has("reisetilskudd") shouldBe false
     }
@@ -98,7 +98,7 @@ class SykmeldingMottakTest {
         testRapid.sendTestMessage(sykmeldingRecord(mottattDato = "2026-04-17T06:30:00Z"), "test-key", "tsm.sykmeldinger")
 
         // 06:30 UTC = 08:30 Oslo (CEST)
-        testRapid.inspektør.message(0)["tidspunkt"].textValue() shouldBe "2026-04-17T08:30:00"
+        testRapid.inspektør.message(0)["tidspunkt"].stringValue() shouldBe "2026-04-17T08:30:00"
     }
 
     @Test

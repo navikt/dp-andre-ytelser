@@ -24,12 +24,12 @@ class ForeldrepengerMottakTest {
 
         testRapid.inspektør.size shouldBe 1
         val event: JsonNode = testRapid.inspektør.message(0)
-        event["@event_name"].textValue() shouldBe "annen_ytelse_endret"
-        event["ident"].textValue() shouldBe "12345678901"
-        event["tema"].textValue() shouldBe "FOR"
-        event["tidspunkt"].textValue() shouldBe "2026-04-17T08:30:00"
-        event["kilde"]["system"].textValue() shouldBe "fp-abakus"
-        event["kilde"]["topic"].textValue() shouldBe "teamforeldrepenger.vedtak-ekstern"
+        event["@event_name"].stringValue() shouldBe "annen_ytelse_endret"
+        event["ident"].stringValue() shouldBe "12345678901"
+        event["tema"].stringValue() shouldBe "FOR"
+        event["tidspunkt"].stringValue() shouldBe "2026-04-17T08:30:00"
+        event["kilde"]["system"].stringValue() shouldBe "fp-abakus"
+        event["kilde"]["topic"].stringValue() shouldBe "teamforeldrepenger.vedtak-ekstern"
     }
 
     @Test
@@ -38,7 +38,7 @@ class ForeldrepengerMottakTest {
 
         testRapid.inspektør.size shouldBe 1
         // 06:30 UTC = 08:30 Oslo (CEST)
-        testRapid.inspektør.message(0)["tidspunkt"].textValue() shouldBe "2026-04-17T08:30:00"
+        testRapid.inspektør.message(0)["tidspunkt"].stringValue() shouldBe "2026-04-17T08:30:00"
     }
 
     @Test
@@ -46,7 +46,7 @@ class ForeldrepengerMottakTest {
         testRapid.sendTestMessage(vedtakEkstern(ident = "98765432100", tema = "OMS"), "test-key", "teamforeldrepenger.vedtak-ekstern")
 
         testRapid.inspektør.size shouldBe 1
-        testRapid.inspektør.message(0)["tema"].textValue() shouldBe "OMS"
+        testRapid.inspektør.message(0)["tema"].stringValue() shouldBe "OMS"
     }
 
     @Test

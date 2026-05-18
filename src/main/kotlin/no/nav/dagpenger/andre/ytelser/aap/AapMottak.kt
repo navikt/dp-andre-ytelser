@@ -27,7 +27,7 @@ internal class AapMottak(
     }
 
     override fun JsonMessage.parseEvent(): AnnenYtelseEndret {
-        val ident = this["ident"].textValue()
+        val ident = this["ident"].stringValue()
         val tidspunkt = LocalDateTime.now()
 
         return AnnenYtelseEndret(

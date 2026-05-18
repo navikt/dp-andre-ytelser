@@ -25,9 +25,9 @@ internal class ForeldrepengerMottak(
     }
 
     override fun JsonMessage.parseEvent(): AnnenYtelseEndret {
-        val ident = this["personidentifikator"].textValue()
-        val tema = this["tema"].textValue()
-        val raaTidspunkt = this["tidspunkt"].textValue()
+        val ident = this["personidentifikator"].stringValue()
+        val tema = this["tema"].stringValue()
+        val raaTidspunkt = this["tidspunkt"].stringValue()
         val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
 
         return AnnenYtelseEndret(

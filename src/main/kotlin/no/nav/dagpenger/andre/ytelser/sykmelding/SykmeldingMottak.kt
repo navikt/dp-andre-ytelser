@@ -35,9 +35,9 @@ internal class SykmeldingMottak(
 
     override fun JsonMessage.parseEvent(): AnnenYtelseEndret {
         val sykmelding = this["sykmelding"]
-        val ident = sykmelding["pasient"]["fnr"].textValue()
-        val sykmeldingId = sykmelding["id"].textValue()
-        val raaTidspunkt = sykmelding["metadata"]["mottattDato"].textValue()
+        val ident = sykmelding["pasient"]["fnr"].stringValue()
+        val sykmeldingId = sykmelding["id"].stringValue()
+        val raaTidspunkt = sykmelding["metadata"]["mottattDato"].stringValue()
         val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
         val aktivitet = mapAktivitet(sykmelding["aktivitet"])
 
@@ -60,9 +60,9 @@ internal class SykmeldingMottak(
         } else {
             node.values().map { aktivitet ->
                 SykmeldingDetaljer.Aktivitet(
-                    type = aktivitet["type"].textValue(),
-                    fom = LocalDate.parse(aktivitet["fom"].textValue()),
-                    tom = LocalDate.parse(aktivitet["tom"].textValue()),
+                    type = aktivitet["type"].stringValue(),
+                    fom = LocalDate.parse(aktivitet["fom"].stringValue()),
+                    tom = LocalDate.parse(aktivitet["tom"].stringValue()),
                 )
             }
         }

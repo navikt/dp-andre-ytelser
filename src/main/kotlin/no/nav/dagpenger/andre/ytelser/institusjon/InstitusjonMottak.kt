@@ -26,11 +26,11 @@ internal class InstitusjonMottak(
     }
 
     override fun JsonMessage.parseEvent(): AnnenYtelseEndret {
-        val ident = this["norskident"].textValue()
-        val type = this["type"].textValue()
+        val ident = this["norskident"].stringValue()
+        val type = this["type"].stringValue()
         val oppholdId = this["oppholdId"].longValue()
         val hendelseId = this["hendelseId"].longValue()
-        val kilde = this["kilde"].textValue()
+        val kilde = this["kilde"].stringValue()
         val tidspunkt = LocalDateTime.now()
 
         return AnnenYtelseEndret(

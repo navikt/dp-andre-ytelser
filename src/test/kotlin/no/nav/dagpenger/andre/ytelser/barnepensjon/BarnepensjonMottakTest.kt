@@ -26,12 +26,12 @@ class BarnepensjonMottakTest {
 
         testRapid.inspektør.size shouldBe 1
         val event: JsonNode = testRapid.inspektør.message(0)
-        event["@event_name"].textValue() shouldBe "annen_ytelse_endret"
-        event["ident"].textValue() shouldBe "12345678901"
-        event["tema"].textValue() shouldBe "EYB"
-        event["tidspunkt"].textValue() shouldBe "2026-05-12T00:00:00"
-        event["kilde"]["system"].textValue() shouldBe "etterlatte-behandling"
-        event["kilde"]["topic"].textValue() shouldBe "etterlatte.vedtakshendelser"
+        event["@event_name"].stringValue() shouldBe "annen_ytelse_endret"
+        event["ident"].stringValue() shouldBe "12345678901"
+        event["tema"].stringValue() shouldBe "EYB"
+        event["tidspunkt"].stringValue() shouldBe "2026-05-12T00:00:00"
+        event["kilde"]["system"].stringValue() shouldBe "etterlatte-behandling"
+        event["kilde"]["topic"].stringValue() shouldBe "etterlatte.vedtakshendelser"
     }
 
     @Test
@@ -44,9 +44,9 @@ class BarnepensjonMottakTest {
 
         val bp = testRapid.inspektør.message(0)["barnepensjon"]
         bp["vedtakId"].longValue() shouldBe 99
-        bp["type"].textValue() shouldBe "INNVILGELSE"
-        bp["vedtaksdato"].textValue() shouldBe "2026-05-12"
-        bp["virkningFom"].textValue() shouldBe "2026-06-01"
+        bp["type"].stringValue() shouldBe "INNVILGELSE"
+        bp["vedtaksdato"].stringValue() shouldBe "2026-05-12"
+        bp["virkningFom"].stringValue() shouldBe "2026-06-01"
     }
 
     @ParameterizedTest
@@ -55,7 +55,7 @@ class BarnepensjonMottakTest {
         testRapid.sendTestMessage(vedtakshendelse(type = type), "test-key", "etterlatte.vedtakshendelser")
 
         testRapid.inspektør.size shouldBe 1
-        testRapid.inspektør.message(0)["barnepensjon"]["type"].textValue() shouldBe type
+        testRapid.inspektør.message(0)["barnepensjon"]["type"].stringValue() shouldBe type
     }
 
     @Test

@@ -32,11 +32,11 @@ internal class BarnepensjonMottak(
     }
 
     override fun JsonMessage.parseEvent(): AnnenYtelseEndret {
-        val ident = this["ident"].textValue()
-        val type = this["type"].textValue()
+        val ident = this["ident"].stringValue()
+        val type = this["type"].stringValue()
         val vedtakId = this["vedtakId"].longValue()
-        val vedtaksdato = LocalDate.parse(this["vedtaksdato"].textValue())
-        val virkningFom = this["virkningFom"].takeUnless { it.isMissingNode }?.textValue()?.let { LocalDate.parse(it) }
+        val vedtaksdato = LocalDate.parse(this["vedtaksdato"].stringValue())
+        val virkningFom = this["virkningFom"].takeUnless { it.isMissingNode }?.stringValue()?.let { LocalDate.parse(it) }
         val tidspunkt = LocalDateTime.of(vedtaksdato, LocalTime.MIDNIGHT)
 
         return AnnenYtelseEndret(
