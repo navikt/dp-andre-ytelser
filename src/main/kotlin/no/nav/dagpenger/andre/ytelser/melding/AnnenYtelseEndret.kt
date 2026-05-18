@@ -11,7 +11,7 @@ internal data class AnnenYtelseEndret(
 ) {
     fun toLogString(): String =
         "tema=$tema, tidspunkt=$tidspunkt, kilde=${kilde.system}" +
-            detaljer.toMap().let { if (it.isNotEmpty()) ", detaljer=$it" else "" }
+            if (detaljer is Detaljer.Tom) "" else ", detaljer=$detaljer"
 
     fun toSikkerLoggString(): String = "ident=${ident.take(6)}*****, ${toLogString()}"
 
