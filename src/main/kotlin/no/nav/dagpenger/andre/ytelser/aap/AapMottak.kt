@@ -41,7 +41,7 @@ internal class AapMottak(
         when (metadata.topic) {
             TOPIC -> {
                 runCatching {
-                    val ident = packet["ident"].asText()
+                    val ident = packet["ident"].textValue()
                     val tidspunkt = LocalDateTime.now()
 
                     log.info { "Mottok AAP-vedtak: tidspunkt=$tidspunkt" }

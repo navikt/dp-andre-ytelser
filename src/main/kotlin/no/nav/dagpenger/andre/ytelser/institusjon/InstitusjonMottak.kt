@@ -38,11 +38,11 @@ internal class InstitusjonMottak(
         meterRegistry: MeterRegistry,
     ) {
         runCatching {
-            val ident = packet["norskident"].asText()
-            val type = packet["type"].asText()
-            val oppholdId = packet["oppholdId"].asLong()
-            val hendelseId = packet["hendelseId"].asLong()
-            val kilde = packet["kilde"].asText()
+            val ident = packet["norskident"].textValue()
+            val type = packet["type"].textValue()
+            val oppholdId = packet["oppholdId"].longValue()
+            val hendelseId = packet["hendelseId"].longValue()
+            val kilde = packet["kilde"].textValue()
             val tidspunkt = LocalDateTime.now() // Meldingen har ikke eget tidspunkt
 
             log.info { "Mottok institusjonsopphold-hendelse: type=$type, oppholdId=$oppholdId, kilde=$kilde" }

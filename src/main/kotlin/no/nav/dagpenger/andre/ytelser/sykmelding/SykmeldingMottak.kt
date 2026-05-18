@@ -50,9 +50,9 @@ internal class SykmeldingMottak(
     ) {
         runCatching {
             val sykmelding = packet["sykmelding"]
-            val ident = sykmelding["pasient"]["fnr"].asText()
-            val sykmeldingId = sykmelding["id"].asText()
-            val raaTidspunkt = sykmelding["metadata"]["mottattDato"].asText()
+            val ident = sykmelding["pasient"]["fnr"].textValue()
+            val sykmeldingId = sykmelding["id"].textValue()
+            val raaTidspunkt = sykmelding["metadata"]["mottattDato"].textValue()
             val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
             val aktivitet = mapAktivitet(sykmelding["aktivitet"])
 
@@ -97,9 +97,9 @@ internal class SykmeldingMottak(
         } else {
             node.values().map { aktivitet ->
                 SykmeldingDetaljer.Aktivitet(
-                    type = aktivitet["type"].asText(),
-                    fom = LocalDate.parse(aktivitet["fom"].asText()),
-                    tom = LocalDate.parse(aktivitet["tom"].asText()),
+                    type = aktivitet["type"].textValue(),
+                    fom = LocalDate.parse(aktivitet["fom"].textValue()),
+                    tom = LocalDate.parse(aktivitet["tom"].textValue()),
                 )
             }
         }

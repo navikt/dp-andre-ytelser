@@ -44,11 +44,11 @@ internal class BarnepensjonMottak(
         meterRegistry: MeterRegistry,
     ) {
         runCatching {
-            val ident = packet["ident"].asText()
-            val type = packet["type"].asText()
-            val vedtakId = packet["vedtakId"].asLong()
-            val vedtaksdato = LocalDate.parse(packet["vedtaksdato"].asText())
-            val virkningFom = packet["virkningFom"].takeUnless { it.isMissingNode }?.asText()?.let { LocalDate.parse(it) }
+            val ident = packet["ident"].textValue()
+            val type = packet["type"].textValue()
+            val vedtakId = packet["vedtakId"].longValue()
+            val vedtaksdato = LocalDate.parse(packet["vedtaksdato"].textValue())
+            val virkningFom = packet["virkningFom"].takeUnless { it.isMissingNode }?.textValue()?.let { LocalDate.parse(it) }
             val tidspunkt = LocalDateTime.of(vedtaksdato, LocalTime.MIDNIGHT)
 
             log.info { "Mottok barnepensjon-vedtak: type=$type, vedtakId=$vedtakId" }

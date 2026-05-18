@@ -40,9 +40,9 @@ internal class ForeldrepengerMottak(
         meterRegistry: MeterRegistry,
     ) {
         runCatching {
-            val ident = packet["personidentifikator"].asText()
-            val tema = packet["tema"].asText()
-            val raaTidspunkt = packet["tidspunkt"].asText()
+            val ident = packet["personidentifikator"].textValue()
+            val tema = packet["tema"].textValue()
+            val raaTidspunkt = packet["tidspunkt"].textValue()
             val tidspunkt = normaliserTilOsloTid(raaTidspunkt)
 
             log.info { "Mottok vedtak fra foreldrepenger: tema=$tema, tidspunkt=$tidspunkt (rå=$raaTidspunkt)" }
