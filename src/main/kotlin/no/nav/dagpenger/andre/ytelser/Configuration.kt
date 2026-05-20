@@ -16,6 +16,7 @@ internal object Configuration {
                 "KAFKA_RAPID_TOPIC" to "teamdagpenger.rapid.v1",
                 "KAFKA_RESET_POLICY" to "latest",
                 "KAFKA_EXTRA_TOPIC" to "teamforeldrepenger.vedtak-ekstern",
+                "INSTITUSJON_TOPIC" to "team-rocket.institusjon-opphold-hendelser",
             ),
         )
 
