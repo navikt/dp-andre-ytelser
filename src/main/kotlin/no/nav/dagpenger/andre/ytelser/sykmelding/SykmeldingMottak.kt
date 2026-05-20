@@ -17,7 +17,7 @@ private val OSLO = ZoneId.of("Europe/Oslo")
 internal class SykmeldingMottak(
     rapidsConnection: RapidsConnection,
 ) : EksternTopicMottak() {
-    override val topic = "tsm.sykmeldinger"
+    override val topics = setOf("tsm.sykmeldinger")
     override val system = "tsm"
 
     companion object {
@@ -33,7 +33,7 @@ internal class SykmeldingMottak(
             .register(this)
     }
 
-    override fun JsonMessage.parseEvent(): AnnenYtelseEndret {
+    override fun JsonMessage.parseEvent(actualTopic: String): AnnenYtelseEndret {
         val sykmelding = this["sykmelding"]
         val ident = sykmelding["pasient"]["fnr"].stringValue()
         val sykmeldingId = sykmelding["id"].stringValue()
@@ -45,7 +45,7 @@ internal class SykmeldingMottak(
             ident = ident,
             tema = TEMA,
             tidspunkt = tidspunkt,
-            kilde = AnnenYtelseEndret.Kilde(system = system, topic = topic),
+            kilde = AnnenYtelseEndret.Kilde(system = system, topic = actualTopic),
             detaljer =
                 SykmeldingDetaljer(
                     id = sykmeldingId,
