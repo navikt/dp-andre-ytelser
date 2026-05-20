@@ -14,10 +14,10 @@ internal abstract class EksternTopicMottak : River.PacketListener {
     protected val log: KLogger = KotlinLogging.logger(this::class.java.name)
     protected val sikkerlogg: KLogger = KotlinLogging.logger("tjenestekall.${this::class.simpleName}")
 
-    abstract val topics: Set<String>
+    abstract val topic: String
     abstract val system: String
 
-    abstract fun JsonMessage.parseEvent(actualTopic: String): AnnenYtelseEndret
+    abstract fun JsonMessage.parseEvent(): AnnenYtelseEndret
 
     override fun onPacket(
         packet: JsonMessage,
@@ -25,10 +25,10 @@ internal abstract class EksternTopicMottak : River.PacketListener {
         metadata: MessageMetadata,
         meterRegistry: MeterRegistry,
     ) {
-        when {
-            metadata.topic in topics -> {
+        when (metadata.topic) {
+            topic -> {
                 runCatching {
-                    val event = packet.parseEvent(metadata.topic)
+                    val event = packet.parseEvent()
                     log.info { "Mottok vedtak fra $system: $event" }
                     sikkerlogg.info { "Mottok vedtak fra $system: ${event.toSikkerLoggString()}" }
                     context.publish(event.ident, AnnenYtelseEndretSerializer.toJsonMessage(event).toJson())
@@ -43,7 +43,7 @@ internal abstract class EksternTopicMottak : River.PacketListener {
             }
 
             else -> {
-                log.warn { "Mottok melding fra uventet topic: ${metadata.topic}, forventet $topics" }
+                log.warn { "Mottok melding fra uventet topic: ${metadata.topic}, forventet $topic" }
             }
         }
     }

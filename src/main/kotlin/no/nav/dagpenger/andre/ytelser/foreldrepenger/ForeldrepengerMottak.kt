@@ -14,7 +14,7 @@ private val OSLO = ZoneId.of("Europe/Oslo")
 internal class ForeldrepengerMottak(
     rapidsConnection: RapidsConnection,
 ) : EksternTopicMottak() {
-    override val topics = setOf("teamforeldrepenger.vedtak-ekstern")
+    override val topic = "teamforeldrepenger.vedtak-ekstern"
     override val system = "fp-abakus"
 
     init {
@@ -24,7 +24,7 @@ internal class ForeldrepengerMottak(
             .register(this)
     }
 
-    override fun JsonMessage.parseEvent(actualTopic: String): AnnenYtelseEndret {
+    override fun JsonMessage.parseEvent(): AnnenYtelseEndret {
         val ident = this["personidentifikator"].stringValue()
         val tema = this["tema"].stringValue()
         val raaTidspunkt = this["tidspunkt"].stringValue()
@@ -34,7 +34,7 @@ internal class ForeldrepengerMottak(
             ident = ident,
             tema = tema,
             tidspunkt = tidspunkt,
-            kilde = AnnenYtelseEndret.Kilde(system = system, topic = actualTopic),
+            kilde = AnnenYtelseEndret.Kilde(system = system, topic = topic),
         )
     }
 

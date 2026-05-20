@@ -13,7 +13,7 @@ import java.time.LocalTime
 internal class BarnepensjonMottak(
     rapidsConnection: RapidsConnection,
 ) : EksternTopicMottak() {
-    override val topics = setOf("etterlatte.vedtakshendelser")
+    override val topic = "etterlatte.vedtakshendelser"
     override val system = "etterlatte-behandling"
 
     companion object {
@@ -31,7 +31,7 @@ internal class BarnepensjonMottak(
             }.register(this)
     }
 
-    override fun JsonMessage.parseEvent(actualTopic: String): AnnenYtelseEndret {
+    override fun JsonMessage.parseEvent(): AnnenYtelseEndret {
         val ident = this["ident"].stringValue()
         val type = this["type"].stringValue()
         val vedtakId = this["vedtakId"].longValue()
@@ -43,7 +43,7 @@ internal class BarnepensjonMottak(
             ident = ident,
             tema = TEMA,
             tidspunkt = tidspunkt,
-            kilde = AnnenYtelseEndret.Kilde(system = system, topic = actualTopic),
+            kilde = AnnenYtelseEndret.Kilde(system = system, topic = topic),
             detaljer =
                 BarnepensjonDetaljer(
                     vedtakId = vedtakId,

@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 internal class InstitusjonMottak(
     rapidsConnection: RapidsConnection,
 ) : EksternTopicMottak() {
-    override val topics = setOf("team-rocket.institusjon-opphold-hendelser", "team-rocket.institusjon-opphold-hendelser-q2")
+    override val topic = "team-rocket.institusjon-opphold-hendelser"
     override val system = "inst2"
 
     companion object {
@@ -25,7 +25,7 @@ internal class InstitusjonMottak(
             .register(this)
     }
 
-    override fun JsonMessage.parseEvent(actualTopic: String): AnnenYtelseEndret {
+    override fun JsonMessage.parseEvent(): AnnenYtelseEndret {
         val ident = this["norskident"].stringValue()
         val type = this["type"].stringValue()
         val oppholdId = this["oppholdId"].longValue()
@@ -37,7 +37,7 @@ internal class InstitusjonMottak(
             ident = ident,
             tema = TEMA,
             tidspunkt = tidspunkt,
-            kilde = AnnenYtelseEndret.Kilde(system = system, topic = actualTopic),
+            kilde = AnnenYtelseEndret.Kilde(system = system, topic = topic),
             detaljer =
                 InstitusjonDetaljer(
                     oppholdId = oppholdId,

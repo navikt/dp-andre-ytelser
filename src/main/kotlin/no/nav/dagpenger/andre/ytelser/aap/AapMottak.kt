@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 internal class AapMottak(
     rapidsConnection: RapidsConnection,
 ) : EksternTopicMottak() {
-    override val topics = setOf("aap.api-intern-hendelse-v1")
+    override val topic = "aap.api-intern-hendelse-v1"
     override val system = "aap-api-intern"
 
     companion object {
@@ -26,7 +26,7 @@ internal class AapMottak(
             .register(this)
     }
 
-    override fun JsonMessage.parseEvent(actualTopic: String): AnnenYtelseEndret {
+    override fun JsonMessage.parseEvent(): AnnenYtelseEndret {
         val ident = this["ident"].stringValue()
         val tidspunkt = LocalDateTime.now()
 
@@ -34,7 +34,7 @@ internal class AapMottak(
             ident = ident,
             tema = TEMA,
             tidspunkt = tidspunkt,
-            kilde = AnnenYtelseEndret.Kilde(system = system, topic = actualTopic),
+            kilde = AnnenYtelseEndret.Kilde(system = system, topic = topic),
         )
     }
 }

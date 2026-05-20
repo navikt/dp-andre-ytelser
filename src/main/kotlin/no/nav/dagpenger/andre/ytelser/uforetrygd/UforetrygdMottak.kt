@@ -13,7 +13,7 @@ import java.time.LocalTime
 internal class UforetrygdMottak(
     rapidsConnection: RapidsConnection,
 ) : EksternTopicMottak() {
-    override val topics = setOf("pensjondeployer.uforevedtak-dagpenger", "pensjon-q2.uforevedtak-dagpenger-q2")
+    override val topic = "pensjondeployer.uforevedtak-dagpenger"
     override val system = "pensjon-pen"
 
     companion object {
@@ -29,7 +29,7 @@ internal class UforetrygdMottak(
             }.register(this)
     }
 
-    override fun JsonMessage.parseEvent(actualTopic: String): AnnenYtelseEndret {
+    override fun JsonMessage.parseEvent(): AnnenYtelseEndret {
         val ident = this["personId"].stringValue()
         val virkningsdato = LocalDate.parse(this["virkningsdato"].stringValue())
         val resultat = this["resultat"].stringValue()
@@ -39,7 +39,7 @@ internal class UforetrygdMottak(
             ident = ident,
             tema = TEMA,
             tidspunkt = LocalDateTime.of(virkningsdato, LocalTime.MIDNIGHT),
-            kilde = AnnenYtelseEndret.Kilde(system = system, topic = actualTopic),
+            kilde = AnnenYtelseEndret.Kilde(system = system, topic = topic),
             detaljer =
                 UforetrygdDetaljer(
                     resultat = resultat,
