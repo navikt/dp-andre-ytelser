@@ -42,3 +42,5 @@ spec:
   env:
     - name: KAFKA_EXTRA_TOPIC
       value: "{{ extraTopics }}"
+    - name: INSTITUSJON_TOPIC
+      value: "{{ institusjonTopic }}"

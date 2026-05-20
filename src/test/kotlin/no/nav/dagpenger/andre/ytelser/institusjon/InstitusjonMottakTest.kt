@@ -12,7 +12,7 @@ class InstitusjonMottakTest {
     private val testRapid = TestRapid()
 
     init {
-        InstitusjonMottak(testRapid)
+        InstitusjonMottak(testRapid, "team-rocket.institusjon-opphold-hendelser")
     }
 
     @BeforeEach

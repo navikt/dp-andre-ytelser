@@ -10,8 +10,9 @@ import java.time.LocalDateTime
 
 internal class InstitusjonMottak(
     rapidsConnection: RapidsConnection,
+    topic: String,
 ) : EksternTopicMottak() {
-    override val topic = "team-rocket.institusjon-opphold-hendelser"
+    override val topic = topic
     override val system = "inst2"
 
     companion object {
