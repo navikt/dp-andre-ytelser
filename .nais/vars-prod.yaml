@@ -1,4 +1,5 @@
 kafka:
   pool: nav-prod
-extraTopics: "teamforeldrepenger.vedtak-ekstern,tsm.sykmeldinger,team-rocket.institusjon-opphold-hendelser,etterlatte.vedtakshendelser,aap.api-intern-hendelse-v1"
+extraTopics: "teamforeldrepenger.vedtak-ekstern,tsm.sykmeldinger,team-rocket.institusjon-opphold-hendelser,etterlatte.vedtakshendelser,aap.api-intern-hendelse-v1,pensjondeployer.uforevedtak-dagpenger"
 institusjonTopic: "team-rocket.institusjon-opphold-hendelser"
+uforetrygdTopic: "pensjondeployer.uforevedtak-dagpenger"

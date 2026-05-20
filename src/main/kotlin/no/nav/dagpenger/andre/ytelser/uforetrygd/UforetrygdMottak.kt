@@ -12,8 +12,9 @@ import java.time.LocalTime
 
 internal class UforetrygdMottak(
     rapidsConnection: RapidsConnection,
+    topic: String,
 ) : EksternTopicMottak() {
-    override val topic = "pensjondeployer.uforevedtak-dagpenger"
+    override val topic = topic
     override val system = "pensjon-pen"
 
     companion object {

@@ -44,3 +44,5 @@ spec:
       value: "{{ extraTopics }}"
     - name: INSTITUSJON_TOPIC
       value: "{{ institusjonTopic }}"
+    - name: UFORETRYGD_TOPIC
+      value: "{{ uforetrygdTopic }}"

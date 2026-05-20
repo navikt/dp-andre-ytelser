@@ -29,7 +29,7 @@ internal object App : RapidsConnection.StatusListener {
             SykmeldingMottak(it)
             InstitusjonMottak(it, Configuration.config.getValue("INSTITUSJON_TOPIC"))
             BarnepensjonMottak(it)
-            UforetrygdMottak(it)
+            UforetrygdMottak(it, Configuration.config.getValue("UFORETRYGD_TOPIC"))
         }
 
     init {

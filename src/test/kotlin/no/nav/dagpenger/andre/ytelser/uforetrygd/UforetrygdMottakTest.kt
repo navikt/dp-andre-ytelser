@@ -10,7 +10,7 @@ class UforetrygdMottakTest {
     private val testRapid = TestRapid()
 
     init {
-        UforetrygdMottak(testRapid)
+        UforetrygdMottak(testRapid, "pensjondeployer.uforevedtak-dagpenger")
     }
 
     @BeforeEach
