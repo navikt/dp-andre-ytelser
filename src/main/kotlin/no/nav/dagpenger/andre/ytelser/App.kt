@@ -7,6 +7,7 @@ import no.nav.dagpenger.andre.ytelser.barnepensjon.BarnepensjonMottak
 import no.nav.dagpenger.andre.ytelser.foreldrepenger.ForeldrepengerMottak
 import no.nav.dagpenger.andre.ytelser.institusjon.InstitusjonMottak
 import no.nav.dagpenger.andre.ytelser.sykmelding.SykmeldingMottak
+import no.nav.dagpenger.andre.ytelser.uforetrygd.UforetrygdMottak
 import no.nav.helse.rapids_rivers.RapidApplication
 
 private val log = KotlinLogging.logger {}
@@ -28,6 +29,7 @@ internal object App : RapidsConnection.StatusListener {
             SykmeldingMottak(it)
             InstitusjonMottak(it, Configuration.config.getValue("INSTITUSJON_TOPIC"))
             BarnepensjonMottak(it)
+            UforetrygdMottak(it, Configuration.config.getValue("UFORETRYGD_TOPIC"))
         }
 
     init {

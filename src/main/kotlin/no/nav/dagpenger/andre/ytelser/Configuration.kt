@@ -17,6 +17,7 @@ internal object Configuration {
                 "KAFKA_RESET_POLICY" to "latest",
                 "KAFKA_EXTRA_TOPIC" to "teamforeldrepenger.vedtak-ekstern",
                 "INSTITUSJON_TOPIC" to "team-rocket.institusjon-opphold-hendelser",
+                "UFORETRYGD_TOPIC" to "pensjondeployer.uforevedtak-dagpenger",
             ),
         )
 

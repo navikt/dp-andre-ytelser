@@ -41,6 +41,8 @@ spec:
       runtime: java
   env:
     - name: KAFKA_EXTRA_TOPIC
-      value: "{{ extraTopics }}"
+      value: "teamforeldrepenger.vedtak-ekstern,tsm.sykmeldinger,{{ institusjonTopic }},etterlatte.vedtakshendelser,aap.api-intern-hendelse-v1,{{ uforetrygdTopic }}"
     - name: INSTITUSJON_TOPIC
       value: "{{ institusjonTopic }}"
+    - name: UFORETRYGD_TOPIC
+      value: "{{ uforetrygdTopic }}"
